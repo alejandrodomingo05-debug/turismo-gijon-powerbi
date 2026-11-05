@@ -1,0 +1,7 @@
+Patron,NombreCorto,ComunidadAutonoma,Provincia,EsFoco,Latitud,Longitud,Orden
+Gijón,Gijón,Principado de Asturias,Asturias,Sí,43.5322,-5.6611,1
+Oviedo,Oviedo,Principado de Asturias,Asturias,No,43.3614,-5.8494,2
+Santander,Santander,Cantabria,Cantabria,No,43.4623,-3.8100,3
+Bilbao,Bilbao,País Vasco,Bizkaia,No,43.2630,-2.9350,4
+Sebastián,Donostia-San Sebastián,País Vasco,Gipuzkoa,No,43.3183,-1.9812,5
+Coruña,A Coruña,Galicia,A Coruña,No,43.3623,-8.4115,6

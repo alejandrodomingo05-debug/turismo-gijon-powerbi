@@ -1,0 +1,221 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
+  <title id="t">Wireframe · Página Resumen</title>
+  <desc id="d">Boceto de la página principal del dashboard: cabecera con filtros, cinco tarjetas KPI, tendencia mensual, estacionalidad, mapa de calor, mercados y ranking de destinos.</desc>
+
+  <!-- Lienzo -->
+  <rect width="1280" height="720" fill="#F6F1E7"/>
+
+  <!-- Cabecera -->
+  <rect width="1280" height="72" fill="#0B3C5D"/>
+  <rect y="72" width="1280" height="4" fill="#F2B705"/>
+  <text x="24" y="34" fill="#FFFFFF" font-size="20" font-weight="600">Turismo hotelero · Gijón · 2025</text>
+  <text x="24" y="56" fill="#C9D8E6" font-size="11">Fuente: INE · Encuesta de Ocupación Hotelera · Datos hasta [mes año]</text>
+  <g font-size="11" fill="#FFFFFF">
+    <text x="560" y="44">Resumen</text>
+    <rect x="556" y="52" width="58" height="3" fill="#F2B705"/>
+    <text x="640" y="44" fill="#C9D8E6">Estacionalidad</text>
+    <text x="752" y="44" fill="#C9D8E6">Benchmark</text>
+  </g>
+  <g font-size="11" fill="#1C2B36">
+    <rect x="872" y="22" width="112" height="30" rx="6" fill="#FFFFFF"/>
+    <text x="884" y="41">Año ▾ 2025</text>
+    <rect x="992" y="22" width="148" height="30" rx="6" fill="#FFFFFF"/>
+    <text x="1004" y="41">Destino ▾ Gijón</text>
+    <rect x="1148" y="22" width="108" height="30" rx="6" fill="#FFFFFF"/>
+    <text x="1160" y="41">Mercado ▾ Todos</text>
+  </g>
+
+  <!-- Fila 1 · KPIs (5 × 233.6 px, separación 16 px) -->
+  <g>
+    <g transform="translate(24,96)">
+      <rect width="233.6" height="112" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+      <rect width="4" height="112" rx="2" fill="#1F5FA8"/>
+      <text x="20" y="28" font-size="11" fill="#5C6770">Viajeros</text>
+      <text x="20" y="66" font-size="28" font-weight="600" fill="#0B3C5D">000.000</text>
+      <text x="20" y="92" font-size="11" fill="#276C44">▲ 0,0 % vs año anterior</text>
+    </g>
+    <g transform="translate(273.6,96)">
+      <rect width="233.6" height="112" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+      <rect width="4" height="112" rx="2" fill="#1F5FA8"/>
+      <text x="20" y="28" font-size="11" fill="#5C6770">Pernoctaciones</text>
+      <text x="20" y="66" font-size="28" font-weight="600" fill="#0B3C5D">000.000</text>
+      <text x="20" y="92" font-size="11" fill="#276C44">▲ 0,0 % vs año anterior</text>
+    </g>
+    <g transform="translate(523.2,96)">
+      <rect width="233.6" height="112" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+      <rect width="4" height="112" rx="2" fill="#1F5FA8"/>
+      <text x="20" y="28" font-size="11" fill="#5C6770">Estancia media (noches)</text>
+      <text x="20" y="66" font-size="28" font-weight="600" fill="#0B3C5D">0,00</text>
+      <text x="20" y="92" font-size="11" fill="#B3261E">▼ 0,0 % vs año anterior</text>
+    </g>
+    <g transform="translate(772.8,96)">
+      <rect width="233.6" height="112" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+      <rect width="4" height="112" rx="2" fill="#1F5FA8"/>
+      <text x="20" y="28" font-size="11" fill="#5C6770">Ocupación por plazas</text>
+      <text x="20" y="66" font-size="28" font-weight="600" fill="#0B3C5D">00,0 %</text>
+      <text x="20" y="92" font-size="11" fill="#276C44">▲ +0,0 pp vs año anterior</text>
+    </g>
+    <g transform="translate(1022.4,96)">
+      <rect width="233.6" height="112" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+      <rect width="4" height="112" rx="2" fill="#F2B705"/>
+      <text x="20" y="28" font-size="11" fill="#5C6770">% pernoctaciones internacionales</text>
+      <text x="20" y="66" font-size="28" font-weight="600" fill="#0B3C5D">00,0 %</text>
+      <text x="20" y="92" font-size="11" fill="#5C6770">Mes pico: [mes]</text>
+    </g>
+  </g>
+
+  <!-- Fila 2 · Tendencia (izq.) + Estacionalidad (dcha.) -->
+  <g transform="translate(24,224)">
+    <rect width="754" height="264" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+    <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Pernoctaciones mensuales vs año anterior</text>
+    <g font-size="10" fill="#5C6770">
+      <rect x="470" y="18" width="12" height="3" fill="#1F5FA8"/><text x="488" y="23">Actual</text>
+      <rect x="540" y="18" width="12" height="3" fill="#7A8A99"/><text x="558" y="23">Año anterior</text>
+      <rect x="640" y="18" width="12" height="3" fill="#A87A00"/><text x="658" y="23">Media móvil 12M</text>
+    </g>
+    <g stroke="#E3DCCD" stroke-dasharray="2 4">
+      <line x1="48" y1="80" x2="738" y2="80"/><line x1="48" y1="140" x2="738" y2="140"/><line x1="48" y1="200" x2="738" y2="200"/>
+    </g>
+    <polyline fill="none" stroke="#7A8A99" stroke-width="2" stroke-dasharray="6 4" points="48,214 106,210 164,200 222,184 280,166 338,128 396,84 454,74 512,132 570,180 628,204 686,212 738,210"/>
+    <polyline fill="none" stroke="#1F5FA8" stroke-width="2.5" points="48,208 106,204 164,192 222,174 280,154 338,112 396,66 454,58 512,118 570,170 628,198 686,206 738,202"/>
+    <polyline fill="none" stroke="#A87A00" stroke-width="2" points="48,160 106,159 164,158 222,157 280,156 338,155 396,153 454,152 512,151 570,151 628,150 686,150 738,149"/>
+    <text x="48" y="248" font-size="10" fill="#5C6770">Ene</text><text x="396" y="248" font-size="10" fill="#5C6770">Jul</text><text x="716" y="248" font-size="10" fill="#5C6770">Dic</text>
+  </g>
+  <g transform="translate(794,224)">
+    <rect width="462" height="264" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+    <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Índice de estacionalidad (1,00 = mes medio)</text>
+    <line x1="24" y1="150" x2="446" y2="150" stroke="#0B3C5D" stroke-dasharray="4 3"/>
+    <text x="410" y="144" font-size="10" fill="#0B3C5D">1,00</text>
+    <g fill="#1F5FA8">
+      <rect x="32"  y="186" width="24" height="44"/><rect x="66"  y="182" width="24" height="48"/>
+      <rect x="100" y="170" width="24" height="60"/><rect x="134" y="160" width="24" height="70"/>
+      <rect x="168" y="150" width="24" height="80"/><rect x="202" y="128" width="24" height="102"/>
+      <rect x="236" y="82"  width="24" height="148" fill="#0B3C5D"/><rect x="270" y="70" width="24" height="160" fill="#0B3C5D"/>
+      <rect x="304" y="120" width="24" height="110"/><rect x="338" y="158" width="24" height="72"/>
+      <rect x="372" y="176" width="24" height="54"/><rect x="406" y="184" width="24" height="46"/>
+    </g>
+    <text x="44" y="248" font-size="10" fill="#5C6770" text-anchor="middle">E</text>
+    <text x="78" y="248" font-size="10" fill="#5C6770" text-anchor="middle">F</text>
+    <text x="112" y="248" font-size="10" fill="#5C6770" text-anchor="middle">M</text>
+    <text x="146" y="248" font-size="10" fill="#5C6770" text-anchor="middle">A</text>
+    <text x="180" y="248" font-size="10" fill="#5C6770" text-anchor="middle">M</text>
+    <text x="214" y="248" font-size="10" fill="#5C6770" text-anchor="middle">J</text>
+    <text x="248" y="248" font-size="10" fill="#5C6770" text-anchor="middle">J</text>
+    <text x="282" y="248" font-size="10" fill="#5C6770" text-anchor="middle">A</text>
+    <text x="316" y="248" font-size="10" fill="#5C6770" text-anchor="middle">S</text>
+    <text x="350" y="248" font-size="10" fill="#5C6770" text-anchor="middle">O</text>
+    <text x="384" y="248" font-size="10" fill="#5C6770" text-anchor="middle">N</text>
+    <text x="418" y="248" font-size="10" fill="#5C6770" text-anchor="middle">D</text>
+  </g>
+
+  <!-- Fila 3 · Mapa de calor + Mercados + Ranking -->
+  <g transform="translate(24,504)">
+    <rect width="400" height="184" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+    <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Ocupación por plazas · año × mes</text>
+    <g>
+      <text x="16" y="65" font-size="10" fill="#5C6770">2021</text>
+      <rect x="52" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="80" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="108" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="136" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="164" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="192" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="220" y="50" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="248" y="50" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="276" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="304" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="332" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="360" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <text x="16" y="89" font-size="10" fill="#5C6770">2022</text>
+      <rect x="52" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="80" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="108" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="136" y="74" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="164" y="74" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="192" y="74" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="220" y="74" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="248" y="74" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="276" y="74" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="304" y="74" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="332" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="360" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <text x="16" y="113" font-size="10" fill="#5C6770">2023</text>
+      <rect x="52" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="80" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="108" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="136" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="164" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="192" y="98" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="220" y="98" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="248" y="98" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="276" y="98" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="304" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="332" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="360" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <text x="16" y="137" font-size="10" fill="#5C6770">2024</text>
+      <rect x="52" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="80" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="108" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="136" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="164" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="192" y="122" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="220" y="122" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="248" y="122" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="276" y="122" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="304" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="332" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="360" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <text x="16" y="161" font-size="10" fill="#5C6770">2025</text>
+      <rect x="52" y="146" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="80" y="146" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <rect x="108" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="136" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="164" y="146" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="192" y="146" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="220" y="146" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="248" y="146" width="26" height="22" rx="2" fill="#0B3C5D"/>
+      <rect x="276" y="146" width="26" height="22" rx="2" fill="#1F5FA8"/>
+      <rect x="304" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="332" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
+      <rect x="360" y="146" width="26" height="22" rx="2" fill="#B9CFE6"/>
+      <text x="65" y="178" font-size="9" fill="#5C6770" text-anchor="middle">E</text>
+      <text x="93" y="178" font-size="9" fill="#5C6770" text-anchor="middle">F</text>
+      <text x="121" y="178" font-size="9" fill="#5C6770" text-anchor="middle">M</text>
+      <text x="149" y="178" font-size="9" fill="#5C6770" text-anchor="middle">A</text>
+      <text x="177" y="178" font-size="9" fill="#5C6770" text-anchor="middle">M</text>
+      <text x="205" y="178" font-size="9" fill="#5C6770" text-anchor="middle">J</text>
+      <text x="233" y="178" font-size="9" fill="#5C6770" text-anchor="middle">J</text>
+      <text x="261" y="178" font-size="9" fill="#5C6770" text-anchor="middle">A</text>
+      <text x="289" y="178" font-size="9" fill="#5C6770" text-anchor="middle">S</text>
+      <text x="317" y="178" font-size="9" fill="#5C6770" text-anchor="middle">O</text>
+      <text x="345" y="178" font-size="9" fill="#5C6770" text-anchor="middle">N</text>
+      <text x="373" y="178" font-size="9" fill="#5C6770" text-anchor="middle">D</text>
+    </g>
+  </g>
+  <g transform="translate(440,504)">
+    <rect width="400" height="184" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+    <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Mercado emisor (% pernoctaciones)</text>
+    <g font-size="10" fill="#5C6770">
+      <text x="16" y="64">2023</text><rect x="56" y="52" width="250" height="18" fill="#1F5FA8"/><rect x="306" y="52" width="78" height="18" fill="#A87A00"/>
+      <text x="16" y="100">2024</text><rect x="56" y="88" width="244" height="18" fill="#1F5FA8"/><rect x="300" y="88" width="84" height="18" fill="#A87A00"/>
+      <text x="16" y="136">2025</text><rect x="56" y="124" width="238" height="18" fill="#1F5FA8"/><rect x="294" y="124" width="90" height="18" fill="#A87A00"/>
+      <rect x="56" y="160" width="10" height="10" fill="#1F5FA8"/><text x="72" y="169">Nacional</text>
+      <rect x="140" y="160" width="10" height="10" fill="#A87A00"/><text x="156" y="169">Internacional</text>
+    </g>
+  </g>
+  <g transform="translate(856,504)">
+    <rect width="400" height="184" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+    <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Ranking España Verde · pernoctaciones</text>
+    <g font-size="10" fill="#1C2B36">
+      <text x="16" y="58">Bilbao</text><rect x="120" y="47" width="250" height="14" fill="#7A8A99"/>
+      <text x="16" y="80">Donostia</text><rect x="120" y="69" width="214" height="14" fill="#7A8A99"/>
+      <text x="16" y="102">Santander</text><rect x="120" y="91" width="168" height="14" fill="#7A8A99"/>
+      <text x="16" y="124">A Coruña</text><rect x="120" y="113" width="150" height="14" fill="#7A8A99"/>
+      <text x="16" y="146" font-weight="600">Gijón</text><rect x="120" y="135" width="132" height="14" fill="#1F5FA8"/>
+      <text x="16" y="168">Oviedo</text><rect x="120" y="157" width="124" height="14" fill="#7A8A99"/>
+    </g>
+  </g>
+
+  <!-- Pie -->
+  <text x="24" y="708" font-size="9" fill="#5C6770">Wireframe orientativo · 1280 × 720 px · rejilla de 8 px · márgenes 24 px · separación 16 px · valores ficticios</text>
+</svg>

@@ -1,0 +1,25 @@
+# --- Power BI Project (PBIP): artefactos locales que no se versionan ---
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+
+# Los .pbix compilados se publican en GitHub Releases, no en el repositorio
+*.pbix
+
+# --- Datos ---
+# CSV originales del INE (se descargan con scripts/descargar_datos_ine.py)
+data/raw/*
+!data/raw/.gitkeep
+
+# --- Python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- Sistema operativo y editores ---
+.DS_Store
+Thumbs.db
+desktop.ini
+~$*
+.vscode/
+*.tmp

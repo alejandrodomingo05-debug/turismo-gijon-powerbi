@@ -1,0 +1,22 @@
+# Normalización de finales de línea para ficheros de texto
+* text=auto
+
+# Fuentes del proyecto (texto, con diff legible)
+*.pq     text
+*.dax    text
+*.tmdl   text
+*.json   text
+*.pbip   text
+*.pbir   text
+*.pbism  text
+*.md     text
+*.csv    text
+*.py     text
+*.svg    text
+
+# Binarios
+*.png    binary
+*.jpg    binary
+*.gif    binary
+*.pbix   binary
+*.abf    binary

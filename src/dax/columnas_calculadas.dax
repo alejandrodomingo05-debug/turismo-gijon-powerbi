@@ -1,0 +1,21 @@
+// =====================================================================
+//  COLUMNAS CALCULADAS
+//  Crear en la vista de tabla: seleccionar la tabla > Nueva columna.
+//  Regla general del proyecto: todo lo que pueda resolverse en Power Query
+//  se resuelve allí. Esta columna depende de los hechos ya cargados, por
+//  eso se define en DAX.
+// =====================================================================
+
+// ---------------------------------------------------------------------
+//  Dim_Fecha[Con Datos]
+//  TRUE para las fechas hasta el último mes publicado por el INE.
+//  La usan las medidas de inteligencia de tiempo para no comparar un año
+//  incompleto con uno completo (patrón "dates with data").
+//  Ocultar en la vista de informe.
+// ---------------------------------------------------------------------
+Con Datos =
+// En una columna calculada no hay contexto de filtro: MAX devuelve el
+// último mes de toda la tabla de hechos (sin CALCULATE, sin transición).
+VAR _UltimoMesConDatos = MAX ( Fact_Demanda[Fecha] )
+RETURN
+    Dim_Fecha[Fecha] <= EOMONTH ( _UltimoMesConDatos, 0 )
