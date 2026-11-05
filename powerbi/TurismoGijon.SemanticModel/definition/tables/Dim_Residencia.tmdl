@@ -1,0 +1,58 @@
+table Dim_Residencia
+	lineageTag: 02fca44a-32e7-5288-83a6-ec16fb9d07a8
+
+	column ResidenciaKey
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 1c676ac8-55f2-5223-a393-de531dce4dce
+		summarizeBy: none
+		sourceColumn: ResidenciaKey
+
+	column Residencia
+		dataType: string
+		lineageTag: e38f56d8-c663-513f-b807-172aa7e55ab8
+		summarizeBy: none
+		sourceColumn: Residencia
+		sortByColumn: Orden
+
+	column Mercado
+		dataType: string
+		lineageTag: 53e4d85a-f304-5171-a379-3deccdd39dba
+		summarizeBy: none
+		sourceColumn: Mercado
+		sortByColumn: Orden
+
+	column Orden
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: bb03152a-69de-5cf8-a52c-aa89d7887795
+		summarizeBy: none
+		sourceColumn: Orden
+
+	partition Dim_Residencia = m
+		mode: import
+		source =
+				// =====================================================================
+				//  Dim_Residencia  ·  Dimensión de mercado emisor (grano: residencia)
+				//  Tabla estática: el INE sólo distingue residentes en España / extranjero.
+				//  La fila "Total" del INE NO es un miembro: se elimina en Fact_Demanda.
+				// =====================================================================
+				let
+				    Origen = #table(
+				        type table [
+				            ResidenciaKey = Int64.Type,
+				            Residencia = text,
+				            Mercado = text,
+				            Orden = Int64.Type
+				        ],
+				        {
+				            {1, "Residentes en España", "Nacional", 1},
+				            {2, "Residentes en el extranjero", "Internacional", 2}
+				        }
+				    )
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table

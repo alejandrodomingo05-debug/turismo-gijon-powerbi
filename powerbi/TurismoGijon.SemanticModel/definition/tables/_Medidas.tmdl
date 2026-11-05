@@ -1,0 +1,491 @@
+table _Medidas
+	lineageTag: 0568835f-dc4c-5bdc-b7d7-3aeb1494eef6
+
+	measure Viajeros =
+			SUM ( Fact_Demanda[Viajeros] )
+		formatString: #,##0
+		displayFolder: 01 Demanda
+		lineageTag: d94d9ad2-87b9-52d8-ae08-4695d0814caa
+
+	measure Pernoctaciones =
+			SUM ( Fact_Demanda[Pernoctaciones] )
+		formatString: #,##0
+		displayFolder: 01 Demanda
+		lineageTag: f103efa6-f402-5c2d-8ad8-8d719c80c49a
+
+	measure 'Estancia Media' =
+			// Noches por viajero (definición INE: pernoctaciones / viajeros).
+			// Se calcula como cociente de sumas: nunca promediar estancias medias.
+			DIVIDE ( [Pernoctaciones], [Viajeros] )
+		formatString: 0.00
+		displayFolder: 01 Demanda
+		lineageTag: 4b9a33c6-d22f-5ec4-b459-95e7c11817dd
+
+	measure '% Pernoctaciones Internacionales' =
+			// Peso del mercado extranjero sobre el total, ignorando el filtro de mercado.
+			VAR _Internacional =
+			    CALCULATE ( [Pernoctaciones], Dim_Residencia[Mercado] = "Internacional" )
+			VAR _Total =
+			    CALCULATE ( [Pernoctaciones], REMOVEFILTERS ( Dim_Residencia ) )
+			RETURN
+			    DIVIDE ( _Internacional, _Total )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 01 Demanda
+		lineageTag: 152b8607-3f0e-5119-a091-f5d54da5ab57
+
+	measure 'Plazas Estimadas' =
+			AVERAGEX (
+			    VALUES ( Dim_Fecha[Inicio Mes] ),
+			    CALCULATE ( SUM ( Fact_Oferta[Plazas] ) )
+			)
+		formatString: #,##0
+		displayFolder: 02 Oferta y Ocupación
+		lineageTag: 2333ad0b-e7c7-5ee3-b8fa-c05e77010c62
+
+	measure 'Establecimientos Abiertos' =
+			AVERAGEX (
+			    VALUES ( Dim_Fecha[Inicio Mes] ),
+			    CALCULATE ( SUM ( Fact_Oferta[Establecimientos] ) )
+			)
+		formatString: #,##0
+		displayFolder: 02 Oferta y Ocupación
+		lineageTag: 72b9a676-a671-5235-92f5-b764536e49e1
+
+	measure 'Personal Empleado' =
+			AVERAGEX (
+			    VALUES ( Dim_Fecha[Inicio Mes] ),
+			    CALCULATE ( SUM ( Fact_Oferta[Personal Empleado] ) )
+			)
+		formatString: #,##0
+		displayFolder: 02 Oferta y Ocupación
+		lineageTag: 64b08c3b-f974-5578-a307-4d6a4e892819
+
+	measure 'Grado Ocupación Plazas' =
+			// Grado de ocupación oficial del INE ponderado por plazas-día.
+			// · 1 mes × 1 destino  -> reproduce exactamente la cifra publicada.
+			// · Varios meses/destinos -> media ponderada por capacidad (correcta),
+			//   en lugar de una media simple de porcentajes (incorrecta).
+			VAR _Filas =
+			    FILTER (
+			        Fact_Oferta,
+			        NOT ISBLANK ( Fact_Oferta[Grado Ocup Plazas INE] )
+			            && NOT ISBLANK ( Fact_Oferta[Plazas Dia] )
+			    )
+			VAR _Ponderado =
+			    SUMX ( _Filas, Fact_Oferta[Grado Ocup Plazas INE] * Fact_Oferta[Plazas Dia] )
+			VAR _Peso =
+			    SUMX ( _Filas, Fact_Oferta[Plazas Dia] )
+			RETURN
+			    DIVIDE ( _Ponderado, _Peso )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 02 Oferta y Ocupación
+		lineageTag: 7e019300-524c-5cb3-9f6f-c824be66a881
+
+	measure 'Grado Ocupación Habitaciones' =
+			VAR _Filas =
+			    FILTER (
+			        Fact_Oferta,
+			        NOT ISBLANK ( Fact_Oferta[Grado Ocup Habitaciones INE] )
+			            && NOT ISBLANK ( Fact_Oferta[Habitaciones Dia] )
+			    )
+			VAR _Ponderado =
+			    SUMX ( _Filas, Fact_Oferta[Grado Ocup Habitaciones INE] * Fact_Oferta[Habitaciones Dia] )
+			VAR _Peso =
+			    SUMX ( _Filas, Fact_Oferta[Habitaciones Dia] )
+			RETURN
+			    DIVIDE ( _Ponderado, _Peso )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 02 Oferta y Ocupación
+		lineageTag: ed4f2e2a-c48f-553a-a5c6-29ee5f97149b
+
+	measure 'Ultimo Mes con Datos' =
+			// Auxiliar (oculta). Último mes publicado por el INE en el modelo.
+			CALCULATE ( MAX ( Fact_Demanda[Fecha] ), REMOVEFILTERS () )
+		formatString: dd/mm/yyyy
+		isHidden
+		displayFolder: 99 Auxiliares
+		lineageTag: 1426f459-2174-5076-864b-c1ca1deef53c
+
+	measure 'Mostrar Valor' =
+			// Auxiliar (oculta). FALSE para periodos posteriores al último dato.
+			VAR _UltimaFechaConDatos = [Ultimo Mes con Datos]
+			VAR _PrimeraFechaVisible = MIN ( Dim_Fecha[Fecha] )
+			RETURN
+			    _PrimeraFechaVisible <= _UltimaFechaConDatos
+		isHidden
+		displayFolder: 99 Auxiliares
+		lineageTag: 125ec62b-e47c-52ad-99e7-62162bf136e8
+
+	measure 'Viajeros AA' =
+			IF (
+			    [Mostrar Valor],
+			    CALCULATE (
+			        [Viajeros],
+			        CALCULATETABLE (
+			            SAMEPERIODLASTYEAR ( Dim_Fecha[Fecha] ),
+			            Dim_Fecha[Con Datos] = TRUE ()
+			        )
+			    )
+			)
+		formatString: #,##0
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: 3d07f251-999e-57df-8347-7a61e30ecdc9
+
+	measure 'Viajeros Var % AA' =
+			VAR _Actual = [Viajeros]
+			VAR _AnioAnterior = [Viajeros AA]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _AnioAnterior ),
+			        DIVIDE ( _Actual - _AnioAnterior, _AnioAnterior )
+			    )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: a71cd7b0-f795-5fc1-895b-e4d783da9378
+
+	measure 'Pernoctaciones AA' =
+			IF (
+			    [Mostrar Valor],
+			    CALCULATE (
+			        [Pernoctaciones],
+			        CALCULATETABLE (
+			            SAMEPERIODLASTYEAR ( Dim_Fecha[Fecha] ),
+			            Dim_Fecha[Con Datos] = TRUE ()
+			        )
+			    )
+			)
+		formatString: #,##0
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: ab96b0a5-64aa-51a6-b858-f627a7aaca3a
+
+	measure 'Pernoctaciones Var % AA' =
+			VAR _Actual = [Pernoctaciones]
+			VAR _AnioAnterior = [Pernoctaciones AA]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _AnioAnterior ),
+			        DIVIDE ( _Actual - _AnioAnterior, _AnioAnterior )
+			    )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: 528302f7-13b6-53f6-bb5f-0d5afd25f692
+
+	measure 'Estancia Media AA' =
+			DIVIDE ( [Pernoctaciones AA], [Viajeros AA] )
+		formatString: 0.00
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: 2f5385f8-b3d7-5ac9-b2ad-20e28827a841
+
+	measure 'Pernoctaciones Mes Anterior' =
+			// Sólo tiene sentido con un único mes en contexto.
+			IF (
+			    HASONEVALUE ( Dim_Fecha[AñoMes Num] ),
+			    CALCULATE ( [Pernoctaciones], DATEADD ( Dim_Fecha[Fecha], -1, MONTH ) )
+			)
+		formatString: #,##0
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: d9a40e7c-76f7-5557-8866-0e71d25f81df
+
+	measure 'Pernoctaciones Var % MoM' =
+			VAR _Actual = [Pernoctaciones]
+			VAR _MesAnterior = [Pernoctaciones Mes Anterior]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _MesAnterior ),
+			        DIVIDE ( _Actual - _MesAnterior, _MesAnterior )
+			    )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: 1ab1e957-7f30-5afa-9b1d-47fff1b64d02
+
+	measure 'Pernoctaciones Acum Año' =
+			IF (
+			    [Mostrar Valor],
+			    CALCULATE ( [Pernoctaciones], DATESYTD ( Dim_Fecha[Fecha] ) )
+			)
+		formatString: #,##0
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: 62733195-6986-57b7-ac83-8a89fc69268f
+
+	measure 'Pernoctaciones Acum Año AA' =
+			// El filtro "Con Datos" recorta el acumulado actual al último mes
+			// publicado ANTES de desplazarlo un año: compara ene-mar con ene-mar.
+			IF (
+			    [Mostrar Valor],
+			    CALCULATE (
+			        [Pernoctaciones],
+			        CALCULATETABLE (
+			            SAMEPERIODLASTYEAR ( DATESYTD ( Dim_Fecha[Fecha] ) ),
+			            Dim_Fecha[Con Datos] = TRUE ()
+			        )
+			    )
+			)
+		formatString: #,##0
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: def08b1a-3687-5f12-bb63-ddec457081f7
+
+	measure 'Pernoctaciones Acum Var %' =
+			VAR _Actual = [Pernoctaciones Acum Año]
+			VAR _AnioAnterior = [Pernoctaciones Acum Año AA]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _AnioAnterior ),
+			        DIVIDE ( _Actual - _AnioAnterior, _AnioAnterior )
+			    )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: e04faf90-a255-5e86-8389-f9a34e48bda4
+
+	measure 'Pernoctaciones Media Móvil 12M' =
+			// Media mensual de los últimos 12 meses: elimina la estacionalidad
+			// y deja ver la tendencia. Sólo se muestra con 12 meses completos.
+			VAR _NumMeses = 12
+			VAR _UltimaFechaVisible = MAX ( Dim_Fecha[Fecha] )
+			VAR _Periodo =
+			    DATESINPERIOD ( Dim_Fecha[Fecha], _UltimaFechaVisible, -_NumMeses, MONTH )
+			VAR _MesesConDatos =
+			    CALCULATE ( DISTINCTCOUNT ( Fact_Demanda[Fecha] ), _Periodo )
+			VAR _Media =
+			    CALCULATE (
+			        AVERAGEX ( VALUES ( Dim_Fecha[Inicio Mes] ), [Pernoctaciones] ),
+			        _Periodo
+			    )
+			RETURN
+			    IF ( [Mostrar Valor] && _MesesConDatos = _NumMeses, _Media )
+		formatString: #,##0
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: ab533d0c-13fc-5efc-9d97-089965e4892d
+
+	measure 'Grado Ocupación Plazas AA' =
+			IF (
+			    [Mostrar Valor],
+			    CALCULATE (
+			        [Grado Ocupación Plazas],
+			        CALCULATETABLE (
+			            SAMEPERIODLASTYEAR ( Dim_Fecha[Fecha] ),
+			            Dim_Fecha[Con Datos] = TRUE ()
+			        )
+			    )
+			)
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: abbdc60a-9e2f-526b-8ba0-f773449c98fc
+
+	measure 'Grado Ocupación Plazas Var pp' =
+			// Variación en PUNTOS PORCENTUALES (no en %): 24,0 % -> 26,5 % = +2,5 pp
+			VAR _Actual = [Grado Ocupación Plazas]
+			VAR _AnioAnterior = [Grado Ocupación Plazas AA]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _AnioAnterior ),
+			        ( _Actual - _AnioAnterior ) * 100
+			    )
+		formatString: "+0.0"" pp"";-0.0"" pp"";0.0"" pp"""
+		displayFolder: 03 Inteligencia de Tiempo
+		lineageTag: d6c14171-978f-559f-b372-875b18e9fd75
+
+	measure 'Ranking Pernoctaciones' =
+			// Posición del destino dentro de la selección actual (1 = mayor).
+			IF (
+			    ISINSCOPE ( Dim_PuntoTuristico[Punto Turístico] ),
+			    RANKX (
+			        ALLSELECTED ( Dim_PuntoTuristico[Punto Turístico] ),
+			        [Pernoctaciones],
+			        ,
+			        DESC,
+			        DENSE
+			    )
+			)
+		formatString: 0
+		displayFolder: 04 Análisis
+		lineageTag: 73888a88-804d-547d-87a3-0d3dc12fdab9
+
+	measure 'Cuota Pernoctaciones Selección' =
+			VAR _Pernoctaciones = [Pernoctaciones]
+			VAR _TotalSeleccion =
+			    CALCULATE ( [Pernoctaciones], ALLSELECTED ( Dim_PuntoTuristico ) )
+			RETURN
+			    DIVIDE ( _Pernoctaciones, _TotalSeleccion )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 04 Análisis
+		lineageTag: b45ecd63-0133-5e97-a6e7-a27513a9c459
+
+	measure 'Índice Estacionalidad' =
+			// Pernoctaciones del mes / media mensual del año (1,00 = mes medio).
+			// Sólo se calcula para años con los 12 meses publicados.
+			VAR _MesesDelAnio =
+			    CALCULATETABLE (
+			        ADDCOLUMNS ( VALUES ( Dim_Fecha[Mes Num] ), "@Pernoct", [Pernoctaciones] ),
+			        ALLEXCEPT ( Dim_Fecha, Dim_Fecha[Año] )
+			    )
+			VAR _MesesConDatos =
+			    COUNTROWS ( FILTER ( _MesesDelAnio, NOT ISBLANK ( [@Pernoct] ) ) )
+			VAR _MediaMensual =
+			    AVERAGEX ( _MesesDelAnio, [@Pernoct] )
+			RETURN
+			    IF (
+			        HASONEVALUE ( Dim_Fecha[Mes Num] ) && _MesesConDatos = 12,
+			        DIVIDE ( [Pernoctaciones], _MediaMensual )
+			    )
+		formatString: 0.00
+		displayFolder: 04 Análisis
+		lineageTag: 974df927-17b1-59d6-8c20-9257584f861e
+
+	measure '% Pernoctaciones Temporada Alta' =
+			// Concentración en julio-agosto: indicador clave de desestacionalización.
+			VAR _Alta =
+			    CALCULATE ( [Pernoctaciones], Dim_Fecha[Temporada] = "Alta" )
+			VAR _Total =
+			    CALCULATE (
+			        [Pernoctaciones],
+			        REMOVEFILTERS ( Dim_Fecha[Temporada], Dim_Fecha[Temporada Orden] )
+			    )
+			RETURN
+			    DIVIDE ( _Alta, _Total )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 04 Análisis
+		lineageTag: 0534760a-3d71-52d4-84e0-661d51afc75c
+
+	measure 'Mes Pico Pernoctaciones' =
+			VAR _Meses =
+			    ADDCOLUMNS (
+			        SUMMARIZE ( Dim_Fecha, Dim_Fecha[Mes Num], Dim_Fecha[Mes] ),
+			        "@Pernoct", [Pernoctaciones]
+			    )
+			VAR _Top =
+			    TOPN ( 1, FILTER ( _Meses, NOT ISBLANK ( [@Pernoct] ) ), [@Pernoct], DESC )
+			RETURN
+			    CONCATENATEX ( _Top, Dim_Fecha[Mes], ", " )
+		displayFolder: 04 Análisis
+		lineageTag: 90d5fa36-42f7-5d2f-951b-19db96b6ad05
+
+	measure 'Título Página' =
+			VAR _Destino =
+			    SELECTEDVALUE ( Dim_PuntoTuristico[Punto Turístico], "Varios destinos" )
+			VAR _Anio =
+			    SELECTEDVALUE ( Dim_Fecha[Año] )
+			RETURN
+			    "Turismo hotelero · " & _Destino
+			        & IF ( NOT ISBLANK ( _Anio ), " · " & _Anio )
+		displayFolder: 05 UI
+		lineageTag: b89bb3fc-d7ed-5ee4-843a-48d58bd2c9b0
+
+	measure 'Texto Actualización' =
+			"Fuente: INE · Encuesta de Ocupación Hotelera · Datos hasta "
+			    & FORMAT ( [Ultimo Mes con Datos], "mmmm yyyy", "es-ES" )
+		displayFolder: 05 UI
+		lineageTag: 3fc972de-1f4e-5a8a-af6b-d732fa2d5d8a
+
+	measure 'Color Variación Pernoctaciones' =
+			// Para formato condicional (fx > Valor del campo). Paleta AA-accesible.
+			VAR _Variacion = [Pernoctaciones Var % AA]
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _Variacion ), "#5C6770",
+			        _Variacion >= 0, "#276C44",
+			        "#B3261E"
+			    )
+		displayFolder: 05 UI
+		lineageTag: 4598453b-b850-54fa-96b5-945f4c52afcd
+
+	measure 'Etiqueta Variación Pernoctaciones' =
+			// Icono + texto: el significado nunca depende sólo del color.
+			VAR _Variacion = [Pernoctaciones Var % AA]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Variacion ),
+			        IF ( _Variacion >= 0, "▲ ", "▼ " )
+			            & FORMAT ( ABS ( _Variacion ), "0.0 %", "es-ES" )
+			            & " vs año anterior"
+			    )
+		displayFolder: 05 UI
+		lineageTag: 74067c24-103b-5f56-9dbf-f363f6e9f4e6
+
+	measure 'Etiqueta Variación Viajeros' =
+			VAR _Variacion = [Viajeros Var % AA]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Variacion ),
+			        IF ( _Variacion >= 0, "▲ ", "▼ " )
+			            & FORMAT ( ABS ( _Variacion ), "0.0 %", "es-ES" )
+			            & " vs año anterior"
+			    )
+		displayFolder: 05 UI
+		lineageTag: ee898ddd-cb41-54e1-bc88-3c59e0391545
+
+	measure 'Etiqueta Variación Estancia' =
+			VAR _Actual = [Estancia Media]
+			VAR _AnioAnterior = [Estancia Media AA]
+			VAR _Variacion =
+			    IF (
+			        NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _AnioAnterior ),
+			        DIVIDE ( _Actual - _AnioAnterior, _AnioAnterior )
+			    )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _Variacion ),
+			        IF ( _Variacion >= 0, "▲ ", "▼ " )
+			            & FORMAT ( ABS ( _Variacion ), "0.0 %", "es-ES" )
+			            & " vs año anterior"
+			    )
+		displayFolder: 05 UI
+		lineageTag: fda1b608-bc06-5ba8-95c2-f9bdb0790da2
+
+	measure 'Etiqueta Variación Ocupación' =
+			VAR _VariacionPP = [Grado Ocupación Plazas Var pp]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _VariacionPP ),
+			        IF ( _VariacionPP >= 0, "▲ +", "▼ -" )
+			            & FORMAT ( ABS ( _VariacionPP ), "0.0", "es-ES" )
+			            & " pp vs año anterior"
+			    )
+		displayFolder: 05 UI
+		lineageTag: 723c718f-c977-5062-ac72-b7013fafdb6f
+
+	measure 'Etiqueta Mes Pico' =
+			VAR _Mes = [Mes Pico Pernoctaciones]
+			RETURN
+			    IF ( _Mes <> "", "Mes pico: " & _Mes )
+		displayFolder: 05 UI
+		lineageTag: da059301-954e-5d9f-9054-b8fb12c22fc0
+
+	measure 'Color Foco' =
+			// Resalta el destino foco (Gijón) frente al benchmark en gráficos de barras.
+			IF (
+			    SELECTEDVALUE ( Dim_PuntoTuristico[Es Foco] ) = "Sí",
+			    "#1F5FA8",
+			    "#7A8A99"
+			)
+		displayFolder: 05 UI
+		lineageTag: 470d2ad8-ec75-5818-9f52-55f8ae6bd49a
+
+	measure 'Alt Texto Tendencia' =
+			// Texto alternativo dinámico para lectores de pantalla.
+			"Gráfico de líneas de pernoctaciones mensuales en "
+			    & SELECTEDVALUE ( Dim_PuntoTuristico[Punto Turístico], "los destinos seleccionados" )
+			    & ". Total del periodo: "
+			    & FORMAT ( [Pernoctaciones], "#,##0", "es-ES" )
+			    & ". Variación interanual: "
+			    & FORMAT ( [Pernoctaciones Var % AA], "+0.0 %;-0.0 %", "es-ES" )
+			    & "."
+		displayFolder: 05 UI
+		lineageTag: 81976ac9-75c0-50b9-a2b2-41d92214f167
+
+	column Columna
+		dataType: string
+		isHidden
+		lineageTag: 2771c634-de59-55d2-8f3c-1b6eb50fa236
+		summarizeBy: none
+		sourceColumn: Columna
+
+	partition _Medidas = m
+		mode: import
+		source =
+				let
+				    Origen = #table(type table [Columna = text], {})
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table

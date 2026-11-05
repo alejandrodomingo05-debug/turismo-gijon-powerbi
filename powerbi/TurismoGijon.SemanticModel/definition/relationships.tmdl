@@ -1,0 +1,19 @@
+relationship 69c98f73-674a-5ac0-a53f-a633d9981321
+	fromColumn: Fact_Demanda.Fecha
+	toColumn: Dim_Fecha.Fecha
+
+relationship 730ecdd6-7245-54c2-8220-1caa1e8921f9
+	fromColumn: Fact_Oferta.Fecha
+	toColumn: Dim_Fecha.Fecha
+
+relationship b49abbb9-5cc0-54a9-b2f7-3b2688eb09d2
+	fromColumn: Fact_Demanda.PuntoKey
+	toColumn: Dim_PuntoTuristico.PuntoKey
+
+relationship 4d4e8e58-e1ae-523d-9579-2de1c2d23e18
+	fromColumn: Fact_Oferta.PuntoKey
+	toColumn: Dim_PuntoTuristico.PuntoKey
+
+relationship 2dc67baa-99a2-5892-a663-caafe298638c
+	fromColumn: Fact_Demanda.ResidenciaKey
+	toColumn: Dim_Residencia.ResidenciaKey

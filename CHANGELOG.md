@@ -5,8 +5,18 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 ## [Sin publicar]
 
 ### Pendiente
-- Informe completo en formato PBIP (`powerbi/`) y capturas reales.
+- Capturas reales e insights con los datos actualizados.
 - Publicación en el servicio de Power BI con actualización programada.
+
+## [0.2.0] · 2026-11-05
+
+### Añadido
+- Proyecto Power BI listo para abrir (`powerbi/TurismoGijon.pbip`): modelo en TMDL con 5 relaciones y 39 medidas, informe en PBIR con 3 páginas y 30 visuales.
+- Consulta `stg_RefPuntos` con copia incrustada de respaldo si el repositorio no es accesible.
+- Medidas de interfaz: etiquetas de variación de viajeros, estancia y ocupación, mes pico y `Estancia Media AA`.
+
+### Cambiado
+- `Dim_PuntoTuristico` ya no accede a la web directamente (evita el error Formula.Firewall).
 
 ## [0.1.0] · 2026-11-05
 

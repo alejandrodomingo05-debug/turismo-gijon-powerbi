@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" font-family="Segoe UI, Helvetica, Arial, sans-serif" role="img" aria-labelledby="t d">
   <title id="t">Wireframe · Página Resumen</title>
-  <desc id="d">Boceto de la página principal del dashboard: cabecera con filtros, cinco tarjetas KPI, tendencia mensual, estacionalidad, mapa de calor, mercados y ranking de destinos.</desc>
+  <desc id="d">Boceto de la página principal del dashboard: cabecera con filtros, cinco tarjetas KPI, tendencia mensual, estacionalidad, mapa de calor de ocupación y ranking de destinos.</desc>
 
   <!-- Lienzo -->
   <rect width="1280" height="720" fill="#F6F1E7"/>
@@ -108,114 +108,101 @@
     <text x="418" y="248" font-size="10" fill="#5C6770" text-anchor="middle">D</text>
   </g>
 
-  <!-- Fila 3 · Mapa de calor + Mercados + Ranking -->
+  <!-- Fila 3 · Mapa de calor + Ranking -->
   <g transform="translate(24,504)">
-    <rect width="400" height="184" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+    <rect width="616" height="200" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
     <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Ocupación por plazas · año × mes</text>
-    <g>
-      <text x="16" y="65" font-size="10" fill="#5C6770">2021</text>
-      <rect x="52" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="80" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="108" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="136" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="164" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="192" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="220" y="50" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="248" y="50" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="276" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="304" y="50" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="332" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="360" y="50" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <text x="16" y="89" font-size="10" fill="#5C6770">2022</text>
-      <rect x="52" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="80" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="108" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="136" y="74" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="164" y="74" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="192" y="74" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="220" y="74" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="248" y="74" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="276" y="74" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="304" y="74" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="332" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="360" y="74" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <text x="16" y="113" font-size="10" fill="#5C6770">2023</text>
-      <rect x="52" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="80" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="108" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="136" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="164" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="192" y="98" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="220" y="98" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="248" y="98" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="276" y="98" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="304" y="98" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="332" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="360" y="98" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <text x="16" y="137" font-size="10" fill="#5C6770">2024</text>
-      <rect x="52" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="80" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="108" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="136" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="164" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="192" y="122" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="220" y="122" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="248" y="122" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="276" y="122" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="304" y="122" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="332" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="360" y="122" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <text x="16" y="161" font-size="10" fill="#5C6770">2025</text>
-      <rect x="52" y="146" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="80" y="146" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <rect x="108" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="136" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="164" y="146" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="192" y="146" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="220" y="146" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="248" y="146" width="26" height="22" rx="2" fill="#0B3C5D"/>
-      <rect x="276" y="146" width="26" height="22" rx="2" fill="#1F5FA8"/>
-      <rect x="304" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="332" y="146" width="26" height="22" rx="2" fill="#5B8DB8"/>
-      <rect x="360" y="146" width="26" height="22" rx="2" fill="#B9CFE6"/>
-      <text x="65" y="178" font-size="9" fill="#5C6770" text-anchor="middle">E</text>
-      <text x="93" y="178" font-size="9" fill="#5C6770" text-anchor="middle">F</text>
-      <text x="121" y="178" font-size="9" fill="#5C6770" text-anchor="middle">M</text>
-      <text x="149" y="178" font-size="9" fill="#5C6770" text-anchor="middle">A</text>
-      <text x="177" y="178" font-size="9" fill="#5C6770" text-anchor="middle">M</text>
-      <text x="205" y="178" font-size="9" fill="#5C6770" text-anchor="middle">J</text>
-      <text x="233" y="178" font-size="9" fill="#5C6770" text-anchor="middle">J</text>
-      <text x="261" y="178" font-size="9" fill="#5C6770" text-anchor="middle">A</text>
-      <text x="289" y="178" font-size="9" fill="#5C6770" text-anchor="middle">S</text>
-      <text x="317" y="178" font-size="9" fill="#5C6770" text-anchor="middle">O</text>
-      <text x="345" y="178" font-size="9" fill="#5C6770" text-anchor="middle">N</text>
-      <text x="373" y="178" font-size="9" fill="#5C6770" text-anchor="middle">D</text>
-    </g>
+    <text x="77.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Ene</text>
+    <text x="121.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Feb</text>
+    <text x="165.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Mar</text>
+    <text x="209.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Abr</text>
+    <text x="253.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">May</text>
+    <text x="297.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Jun</text>
+    <text x="341.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Jul</text>
+    <text x="385.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Ago</text>
+    <text x="429.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Sep</text>
+    <text x="473.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Oct</text>
+    <text x="517.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Nov</text>
+    <text x="561.0" y="52" font-size="9" fill="#5C6770" text-anchor="middle">Dic</text>
+    <text x="16" y="73" font-size="10" fill="#5C6770">2025</text>
+    <rect x="56" y="58" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="100" y="58" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="144" y="58" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="188" y="58" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="232" y="58" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="276" y="58" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="320" y="58" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="364" y="58" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="408" y="58" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="452" y="58" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="496" y="58" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="540" y="58" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <text x="16" y="98" font-size="10" fill="#5C6770">2024</text>
+    <rect x="56" y="83" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="100" y="83" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="144" y="83" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="188" y="83" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="232" y="83" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="276" y="83" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="320" y="83" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="364" y="83" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="408" y="83" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="452" y="83" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="496" y="83" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="540" y="83" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <text x="16" y="123" font-size="10" fill="#5C6770">2023</text>
+    <rect x="56" y="108" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="100" y="108" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="144" y="108" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="188" y="108" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="232" y="108" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="276" y="108" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="320" y="108" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="364" y="108" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="408" y="108" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="452" y="108" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="496" y="108" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="540" y="108" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <text x="16" y="148" font-size="10" fill="#5C6770">2022</text>
+    <rect x="56" y="133" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="100" y="133" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="144" y="133" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="188" y="133" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="232" y="133" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="276" y="133" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="320" y="133" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="364" y="133" width="42" height="23" fill="#9DBEDD" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="408" y="133" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="452" y="133" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="496" y="133" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="540" y="133" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <text x="16" y="173" font-size="10" fill="#5C6770">2021</text>
+    <rect x="56" y="158" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="100" y="158" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="144" y="158" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="188" y="158" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="232" y="158" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="276" y="158" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="320" y="158" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="364" y="158" width="42" height="23" fill="#B3CDE5" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="408" y="158" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="452" y="158" width="42" height="23" fill="#C9DCEC" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="496" y="158" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
+    <rect x="540" y="158" width="42" height="23" fill="#E3EDF6" stroke="#EEE8DC" stroke-width="0.5"/>
   </g>
-  <g transform="translate(440,504)">
-    <rect width="400" height="184" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
-    <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Mercado emisor (% pernoctaciones)</text>
-    <g font-size="10" fill="#5C6770">
-      <text x="16" y="64">2023</text><rect x="56" y="52" width="250" height="18" fill="#1F5FA8"/><rect x="306" y="52" width="78" height="18" fill="#A87A00"/>
-      <text x="16" y="100">2024</text><rect x="56" y="88" width="244" height="18" fill="#1F5FA8"/><rect x="300" y="88" width="84" height="18" fill="#A87A00"/>
-      <text x="16" y="136">2025</text><rect x="56" y="124" width="238" height="18" fill="#1F5FA8"/><rect x="294" y="124" width="90" height="18" fill="#A87A00"/>
-      <rect x="56" y="160" width="10" height="10" fill="#1F5FA8"/><text x="72" y="169">Nacional</text>
-      <rect x="140" y="160" width="10" height="10" fill="#A87A00"/><text x="156" y="169">Internacional</text>
-    </g>
-  </g>
-  <g transform="translate(856,504)">
-    <rect width="400" height="184" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
+  <g transform="translate(656,504)">
+    <rect width="600" height="200" rx="8" fill="#FFFFFF" stroke="#E3DCCD"/>
     <text x="16" y="28" font-size="12" font-weight="600" fill="#1C2B36">Ranking España Verde · pernoctaciones</text>
     <g font-size="10" fill="#1C2B36">
-      <text x="16" y="58">Bilbao</text><rect x="120" y="47" width="250" height="14" fill="#7A8A99"/>
-      <text x="16" y="80">Donostia</text><rect x="120" y="69" width="214" height="14" fill="#7A8A99"/>
-      <text x="16" y="102">Santander</text><rect x="120" y="91" width="168" height="14" fill="#7A8A99"/>
-      <text x="16" y="124">A Coruña</text><rect x="120" y="113" width="150" height="14" fill="#7A8A99"/>
-      <text x="16" y="146" font-weight="600">Gijón</text><rect x="120" y="135" width="132" height="14" fill="#1F5FA8"/>
-      <text x="16" y="168">Oviedo</text><rect x="120" y="157" width="124" height="14" fill="#7A8A99"/>
+      <text x="16" y="60">Bilbao</text><rect x="130" y="49" width="400" height="16" fill="#7A8A99"/>
+      <text x="16" y="84">Donostia</text><rect x="130" y="73" width="342" height="16" fill="#7A8A99"/>
+      <text x="16" y="108">Santander</text><rect x="130" y="97" width="268" height="16" fill="#7A8A99"/>
+      <text x="16" y="132">A Coruña</text><rect x="130" y="121" width="240" height="16" fill="#7A8A99"/>
+      <text x="16" y="156" font-weight="600">Gijón</text><rect x="130" y="145" width="211" height="16" fill="#1F5FA8"/>
+      <text x="16" y="180">Oviedo</text><rect x="130" y="169" width="198" height="16" fill="#7A8A99"/>
     </g>
   </g>
 
   <!-- Pie -->
-  <text x="24" y="708" font-size="9" fill="#5C6770">Wireframe orientativo · 1280 × 720 px · rejilla de 8 px · márgenes 24 px · separación 16 px · valores ficticios</text>
+  <text x="24" y="716" font-size="9" fill="#5C6770">Wireframe orientativo · 1280 × 720 px · rejilla de 8 px · márgenes 24 px · separación 16 px · valores ficticios</text>
 </svg>

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "TurismoGijon"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "38478d19-f4d6-5658-98e1-faa7c5ac15fe"
+  }
+}

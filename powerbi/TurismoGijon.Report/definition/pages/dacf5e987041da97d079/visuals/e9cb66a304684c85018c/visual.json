@@ -1,0 +1,143 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "e9cb66a304684c85018c",
+  "position": {
+    "x": 24,
+    "y": 404,
+    "z": 7000,
+    "height": 300,
+    "width": 600,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "scatterChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_PuntoTuristico"
+                    }
+                  },
+                  "Property": "Punto Turístico"
+                }
+              },
+              "queryRef": "Dim_PuntoTuristico.Punto Turístico",
+              "nativeQueryRef": "Punto Turístico",
+              "active": true
+            }
+          ]
+        },
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Estancia Media"
+                }
+              },
+              "queryRef": "_Medidas.Estancia Media",
+              "nativeQueryRef": "Estancia Media"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Grado Ocupación Plazas"
+                }
+              },
+              "queryRef": "_Medidas.Grado Ocupación Plazas",
+              "nativeQueryRef": "Grado Ocupación Plazas"
+            }
+          ]
+        },
+        "Size": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Plazas Estimadas"
+                }
+              },
+              "queryRef": "_Medidas.Plazas Estimadas",
+              "nativeQueryRef": "Plazas Estimadas"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Estancia media vs. ocupación (tamaño = plazas)'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Gráfico de dispersión: estancia media frente a grado de ocupación por destino; el tamaño indica las plazas'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

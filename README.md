@@ -144,14 +144,16 @@ Todas las medidas (más de 30, comentadas y organizadas en carpetas) están en [
 - Conexión a Internet (los datos se descargan directamente del INE).
 - Opcional: Python 3.9+ para el script de descarga y validación sin conexión.
 
-### Opción A · Abrir el proyecto
+### Opción A · Abrir el proyecto (recomendado)
+
+El informe completo (modelo, 39 medidas y 3 páginas) está incluido y listo para abrir.
 
 ```bash
 git clone https://github.com/GITHUB_USER/turismo-gijon-powerbi.git
 ```
 
-1. Abre `powerbi/TurismoGijon.pbip` con Power BI Desktop.
-2. *Inicio > Actualizar*. Si se piden credenciales: **Anónimo**, nivel de privacidad **Público**.
+1. Doble clic en `powerbi/TurismoGijon.pbip` (Power BI Desktop).
+2. *Inicio > Actualizar*. Credenciales: **Anónimo**; niveles de privacidad: **Público** para el INE y GitHub.
 3. Ajusta los parámetros si lo necesitas (*Transformar datos > Editar parámetros*):
 
 | Parámetro | Valor por defecto | Para qué |
@@ -200,7 +202,9 @@ Descarga las tablas del INE en `data/raw/`, genera extractos filtrados en `data/
 ## 🗺️ Roadmap
 
 - [x] Diseño de la arquitectura, ETL, modelo, medidas y tema
-- [ ] Informe completo en PBIP y capturas reales
+- [x] Informe completo en PBIP (TMDL + PBIR): 3 páginas, 30 visuales
+- [ ] Capturas reales e insights con los datos actualizados
+- [ ] Información sobre herramientas de página "Detalle del mes"
 - [ ] Publicación en el servicio con actualización programada
 - [ ] Rentabilidad hotelera (ADR y RevPAR, INE tablas 46298 / 46301)
 - [ ] Apartamentos turísticos (EOAP) como oferta extrahotelera

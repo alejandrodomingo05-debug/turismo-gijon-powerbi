@@ -5,6 +5,8 @@
 
 Esta guía explica el **qué**, el **cómo** y, sobre todo, el **porqué** de cada decisión. El código de cada bloque vive también en [`src/`](../src) (un fichero por consulta o artefacto), que es la implementación de referencia.
 
+> **Atajo:** el resultado final ya está construido en [`powerbi/TurismoGijon.pbip`](../powerbi/TurismoGijon.pbip). Ábrelo con Power BI Desktop y pulsa *Actualizar* (instrucciones en [`powerbi/README.md`](../powerbi/README.md)). Esta guía sirve para entender cada pieza o reconstruirla desde cero.
+
 ## Índice
 
 0. [Decisión de alcance](#0-decisión-de-alcance)
@@ -65,8 +67,9 @@ flowchart LR
         B --> F
         F --> S1["stg_INE_Demanda"]
         F --> S2["stg_INE_Oferta"]
+        R --> S3["stg_RefPuntos"]
         S1 --> DP["Dim_PuntoTuristico"]
-        R --> DP
+        S3 --> DP
         S1 --> FD["Fact_Demanda"]
         S2 --> FO["Fact_Oferta"]
         DP --> FD
@@ -502,6 +505,73 @@ in
     Tipado
 ```
 
+`stg_RefPuntos` es la **única** consulta que accede a GitHub. Separarla no es estético: si `Dim_PuntoTuristico` leyera la web directamente y además referenciara `stg_INE_Demanda`, Power Query lanzaría el error **Formula.Firewall** (*"Query references other queries or steps, so it may not directly access a data source"*). Regla práctica: una consulta **o** accede a orígenes **o** combina otras consultas, nunca ambas cosas. Además, si el repositorio no está accesible, usa una copia incrustada y el informe carga igualmente.
+
+**`stg_RefPuntos`** · [`src/power-query/staging/stg_RefPuntos.pq`](../src/power-query/staging/stg_RefPuntos.pq)
+
+```powerquery
+// =====================================================================
+//  stg_RefPuntos  ·  Staging (Habilitar carga: NO)
+//  Atributos de referencia de los destinos (CCAA, provincia, coordenadas,
+//  orden, foco), versionados en data/reference/ref_puntos_turisticos.csv.
+//
+//  · Esta consulta es la ÚNICA que accede a GitHub. Dim_PuntoTuristico la
+//    referencia en lugar de leer la web directamente: una consulta que
+//    referencia otras consultas y además accede a un origen provoca el
+//    error Formula.Firewall ("rebuild this data combination").
+//  · Si el repositorio no está accesible (sin conexión, repo privado o aún
+//    no publicado) se usa la copia incrustada: el informe siempre carga.
+// =====================================================================
+let
+    // Table.Buffer fuerza la descarga DENTRO del try: sin él, M evalúa la
+    // tabla de forma diferida y un error 404 escaparía al otherwise.
+    Remota =
+        try
+            Table.Buffer(
+                Table.PromoteHeaders(
+                    Csv.Document(
+                        Web.Contents(pGitHubRawBase, [RelativePath = pRutaReferencia]),
+                        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+                    ),
+                    [PromoteAllScalars = true]
+                )
+            )
+        otherwise
+            null,
+    Incrustada = #table(
+        {"Patron", "NombreCorto", "ComunidadAutonoma", "Provincia", "EsFoco", "Latitud", "Longitud", "Orden"},
+        {
+            {"Gijón", "Gijón", "Principado de Asturias", "Asturias", "Sí", "43.5322", "-5.6611", "1"},
+            {"Oviedo", "Oviedo", "Principado de Asturias", "Asturias", "No", "43.3614", "-5.8494", "2"},
+            {"Santander", "Santander", "Cantabria", "Cantabria", "No", "43.4623", "-3.8100", "3"},
+            {"Bilbao", "Bilbao", "País Vasco", "Bizkaia", "No", "43.2630", "-2.9350", "4"},
+            {"Sebastián", "Donostia-San Sebastián", "País Vasco", "Gipuzkoa", "No", "43.3183", "-1.9812", "5"},
+            {"Coruña", "A Coruña", "Galicia", "A Coruña", "No", "43.3623", "-8.4115", "6"}
+        }
+    ),
+    Origen =
+        if Remota <> null and Table.HasColumns(Remota, {"Patron", "NombreCorto", "Orden"}) then
+            Remota
+        else
+            Incrustada,
+    Tipado = Table.TransformColumnTypes(
+        Origen,
+        {
+            {"Patron", type text},
+            {"NombreCorto", type text},
+            {"ComunidadAutonoma", type text},
+            {"Provincia", type text},
+            {"EsFoco", type text},
+            {"Latitud", type number},
+            {"Longitud", type number},
+            {"Orden", Int64.Type}
+        },
+        "en-US"
+    )
+in
+    Tipado
+```
+
 ### 1.6 Dimensiones y hechos
 
 **`Dim_Fecha`** · [`src/power-query/modelo/Dim_Fecha.pq`](../src/power-query/modelo/Dim_Fecha.pq)
@@ -561,33 +631,16 @@ in
 //  Dim_PuntoTuristico  ·  Dimensión de destino (grano: punto turístico)
 //  · Los miembros salen de los datos (lo que publica el INE).
 //  · Los atributos (CCAA, provincia, coordenadas, orden, foco) vienen de
-//    un CSV de referencia versionado en el propio repositorio y servido
-//    por raw.githubusercontent.com (origen web público: no requiere
-//    puerta de enlace para actualizar en el servicio).
+//    stg_RefPuntos. Esta consulta NO accede a ningún origen directamente:
+//    sólo combina otras consultas (evita el error Formula.Firewall).
 //  · Clave suplente entera (PuntoKey): relaciones más ligeras que texto.
 // =====================================================================
 let
     // 1) Miembros presentes en los datos
     Puntos = Table.Distinct(Table.SelectColumns(stg_INE_Demanda, {"PuntoTuristico"})),
 
-    // 2) Atributos de referencia (data/reference/ref_puntos_turisticos.csv)
-    RefBinario = Web.Contents(pGitHubRawBase, [RelativePath = pRutaReferencia]),
-    RefCsv = Csv.Document(RefBinario, [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
-    Ref = Table.PromoteHeaders(RefCsv, [PromoteAllScalars = true]),
-    RefTipada = Table.TransformColumnTypes(
-        Ref,
-        {
-            {"Patron", type text},
-            {"NombreCorto", type text},
-            {"ComunidadAutonoma", type text},
-            {"Provincia", type text},
-            {"EsFoco", type text},
-            {"Latitud", type number},
-            {"Longitud", type number},
-            {"Orden", Int64.Type}
-        },
-        "en-US"
-    ),
+    // 2) Atributos de referencia (ya tipados en staging)
+    RefTipada = stg_RefPuntos,
 
     // 3) Emparejar cada punto INE con su fila de referencia por patrón
     ConRef = Table.AddColumn(
@@ -1134,6 +1187,9 @@ DEFINE
                 DIVIDE ( _Actual - _AnioAnterior, _AnioAnterior )
             )
 
+    MEASURE '_Medidas'[Estancia Media AA] =
+        DIVIDE ( [Pernoctaciones AA], [Viajeros AA] )
+
     MEASURE '_Medidas'[Pernoctaciones Mes Anterior] =
         // Sólo tiene sentido con un único mes en contexto.
         IF (
@@ -1322,6 +1378,47 @@ DEFINE
                     & " vs año anterior"
             )
 
+    MEASURE '_Medidas'[Etiqueta Variación Viajeros] =
+        VAR _Variacion = [Viajeros Var % AA]
+        RETURN
+            IF (
+                NOT ISBLANK ( _Variacion ),
+                IF ( _Variacion >= 0, "▲ ", "▼ " )
+                    & FORMAT ( ABS ( _Variacion ), "0.0 %", "es-ES" )
+                    & " vs año anterior"
+            )
+
+    MEASURE '_Medidas'[Etiqueta Variación Estancia] =
+        VAR _Actual = [Estancia Media]
+        VAR _AnioAnterior = [Estancia Media AA]
+        VAR _Variacion =
+            IF (
+                NOT ISBLANK ( _Actual ) && NOT ISBLANK ( _AnioAnterior ),
+                DIVIDE ( _Actual - _AnioAnterior, _AnioAnterior )
+            )
+        RETURN
+            IF (
+                NOT ISBLANK ( _Variacion ),
+                IF ( _Variacion >= 0, "▲ ", "▼ " )
+                    & FORMAT ( ABS ( _Variacion ), "0.0 %", "es-ES" )
+                    & " vs año anterior"
+            )
+
+    MEASURE '_Medidas'[Etiqueta Variación Ocupación] =
+        VAR _VariacionPP = [Grado Ocupación Plazas Var pp]
+        RETURN
+            IF (
+                NOT ISBLANK ( _VariacionPP ),
+                IF ( _VariacionPP >= 0, "▲ +", "▼ -" )
+                    & FORMAT ( ABS ( _VariacionPP ), "0.0", "es-ES" )
+                    & " pp vs año anterior"
+            )
+
+    MEASURE '_Medidas'[Etiqueta Mes Pico] =
+        VAR _Mes = [Mes Pico Pernoctaciones]
+        RETURN
+            IF ( _Mes <> "", "Mes pico: " & _Mes )
+
     MEASURE '_Medidas'[Color Foco] =
         // Resalta el destino foco (Gijón) frente al benchmark en gráficos de barras.
         IF (
@@ -1392,7 +1489,7 @@ RETURN
 | Medida | Formato | Carpeta |
 |---|---|---|
 | Viajeros, Pernoctaciones, Viajeros AA, Pernoctaciones AA, Pernoctaciones Mes Anterior, Pernoctaciones Acum Año, Pernoctaciones Acum Año AA, Pernoctaciones Media Móvil 12M | `#,##0` | 01 Demanda / 03 Tiempo |
-| Estancia Media | `0.00` | 01 Demanda |
+| Estancia Media, Estancia Media AA | `0.00` | 01 Demanda / 03 Tiempo |
 | % Pernoctaciones Internacionales, % Pernoctaciones Temporada Alta, Cuota Pernoctaciones Selección | `0.0 %` | 04 Análisis |
 | Plazas Estimadas, Establecimientos Abiertos, Personal Empleado | `#,##0` | 02 Oferta |
 | Grado Ocupación Plazas, Grado Ocupación Habitaciones, Grado Ocupación Plazas AA | `0.0 %` | 02 Oferta |
@@ -1400,7 +1497,7 @@ RETURN
 | Grado Ocupación Plazas Var pp | `+0.0" pp";-0.0" pp";0.0" pp"` | 03 Tiempo |
 | Índice Estacionalidad | `0.00` | 04 Análisis |
 | Ranking Pernoctaciones | `0` | 04 Análisis |
-| Título Página, Texto Actualización, Etiqueta Variación…, Color…, Alt Texto… | Texto | 05 UI |
+| Título Página, Texto Actualización, Etiqueta Variación (Viajeros, Pernoctaciones, Estancia, Ocupación), Etiqueta Mes Pico, Color…, Alt Texto… | Texto | 05 UI |
 | Ultimo Mes con Datos, Mostrar Valor | — (ocultas) | 99 Auxiliares |
 
 ### 3.5 KPIs clave y su lectura de negocio
@@ -1520,9 +1617,11 @@ Visual **Tarjeta (nueva)** con barra de acento a la izquierda (definida en el te
 
 Microsoft recomienda el formato **PBIP** para el control de código fuente: el `.pbix` es un binario que Git no puede comparar, mientras que el PBIP guarda el modelo semántico en **TMDL** y el informe en **PBIR** (texto legible, con diferencias línea a línea).
 
+El repositorio ya incluye el proyecto en `powerbi/TurismoGijon.pbip`. Para trabajar con él:
+
 1. Si tu versión de Power BI Desktop no lo trae activado por defecto: *Opciones > Características en versión preliminar* → activa el formato de proyecto, el **formato TMDL** para modelos semánticos y el **formato PBIR** para informes.
-2. *Archivo > Guardar como* → **Archivos de proyecto de Power BI (*.pbip)** → guárdalo en `powerbi/` con el nombre `TurismoGijon`.
-3. El `.pbix` compilado no se versiona: se adjunta a cada **GitHub Release**.
+2. Abre `TurismoGijon.pbip`, haz tus cambios y guarda con *Archivo > Guardar*: Desktop reescribe los ficheros de texto y Git muestra exactamente qué cambió.
+3. El `.pbix` compilado no se versiona: se adjunta a cada **GitHub Release** (*Archivo > Guardar como > .pbix*).
 
 ### 5.2 Estructura del repositorio
 

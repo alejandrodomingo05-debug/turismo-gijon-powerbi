@@ -1,0 +1,18 @@
+model Model
+	culture: es-ES
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-ES
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["pINE_BaseUrl","pTablaDemanda","pTablaOferta","pPuntosTuristicos","pFechaInicio","pGitHubRawBase","pRutaReferencia","fnLeerTablaINE","fnRenombrarPorPatron","fnFechaDesdePeriodoINE","stg_INE_Demanda","stg_INE_Oferta","stg_RefPuntos","chk_Demanda_Totales","Dim_Fecha","Dim_PuntoTuristico","Dim_Residencia","Fact_Demanda","Fact_Oferta","_Medidas"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table Dim_Fecha
+ref table Dim_PuntoTuristico
+ref table Dim_Residencia
+ref table Fact_Demanda
+ref table Fact_Oferta
+ref table _Medidas

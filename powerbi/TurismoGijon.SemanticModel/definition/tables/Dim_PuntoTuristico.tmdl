@@ -1,0 +1,123 @@
+table Dim_PuntoTuristico
+	lineageTag: 3708d4d0-ffa8-58a5-b5db-8fa098e93e7b
+
+	column PuntoKey
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: daaaff41-6e6f-5886-8177-8a9a29a2092c
+		summarizeBy: none
+		sourceColumn: PuntoKey
+
+	column 'Punto Turístico'
+		dataType: string
+		lineageTag: 52fce3c2-e47c-575e-86d4-c31d1ef2b924
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: Punto Turístico
+		sortByColumn: Orden
+
+	column 'Nombre INE'
+		dataType: string
+		isHidden
+		lineageTag: 40933b4c-6fa9-5eb0-828d-95608cb5018a
+		summarizeBy: none
+		sourceColumn: Nombre INE
+
+	column 'Comunidad Autónoma'
+		dataType: string
+		lineageTag: bec5fb14-38d5-5f49-ad8f-1eed0533240d
+		dataCategory: StateOrProvince
+		summarizeBy: none
+		sourceColumn: Comunidad Autónoma
+
+	column Provincia
+		dataType: string
+		lineageTag: 2374b1cb-b0b5-5147-8aa8-f61bc35d8713
+		summarizeBy: none
+		sourceColumn: Provincia
+
+	column 'Es Foco'
+		dataType: string
+		lineageTag: 75f8ac2f-7bf8-58ae-acb0-d55b14a5d29f
+		summarizeBy: none
+		sourceColumn: Es Foco
+
+	column Latitud
+		dataType: double
+		lineageTag: 1b34c5c6-b2b3-5d4b-911d-335ce851ba3f
+		dataCategory: Latitude
+		summarizeBy: none
+		sourceColumn: Latitud
+
+	column Longitud
+		dataType: double
+		lineageTag: 53a4552e-2f03-5bf7-8881-25d86a7bef6e
+		dataCategory: Longitude
+		summarizeBy: none
+		sourceColumn: Longitud
+
+	column Orden
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 9eaa84ab-8b3a-5c91-b7ca-b9606a02b807
+		summarizeBy: none
+		sourceColumn: Orden
+
+	partition Dim_PuntoTuristico = m
+		mode: import
+		source =
+				// =====================================================================
+				//  Dim_PuntoTuristico  ·  Dimensión de destino (grano: punto turístico)
+				//  · Los miembros salen de los datos (lo que publica el INE).
+				//  · Los atributos (CCAA, provincia, coordenadas, orden, foco) vienen de
+				//    stg_RefPuntos. Esta consulta NO accede a ningún origen directamente:
+				//    sólo combina otras consultas (evita el error Formula.Firewall).
+				//  · Clave suplente entera (PuntoKey): relaciones más ligeras que texto.
+				// =====================================================================
+				let
+				    // 1) Miembros presentes en los datos
+				    Puntos = Table.Distinct(Table.SelectColumns(stg_INE_Demanda, {"PuntoTuristico"})),
+				    // 2) Atributos de referencia (ya tipados en staging)
+				    RefTipada = stg_RefPuntos,
+				    // 3) Emparejar cada punto INE con su fila de referencia por patrón
+				    ConRef = Table.AddColumn(
+				        Puntos,
+				        "Ref",
+				        (fila) =>
+				            Table.First(
+				                Table.SelectRows(
+				                    RefTipada,
+				                    each Text.Contains(fila[PuntoTuristico], [Patron], Comparer.OrdinalIgnoreCase)
+				                ),
+				                null
+				            )
+				    ),
+				    Expandido = Table.ExpandRecordColumn(
+				        ConRef,
+				        "Ref",
+				        {"NombreCorto", "ComunidadAutonoma", "Provincia", "EsFoco", "Latitud", "Longitud", "Orden"},
+				        {"NombreCorto", "Comunidad Autónoma", "Provincia", "Es Foco", "Latitud", "Longitud", "Orden"}
+				    ),
+				    // 4) Nombre visible: el de referencia o, si no existe, el del INE
+				    ConNombre = Table.AddColumn(
+				        Expandido,
+				        "Punto Turístico",
+				        each if [NombreCorto] = null then [PuntoTuristico] else [NombreCorto],
+				        type text
+				    ),
+				    ConOrden = Table.TransformColumns(ConNombre, {{"Orden", each if _ = null then 99 else _, Int64.Type}}),
+				    ConFoco = Table.TransformColumns(ConOrden, {{"Es Foco", each if _ = null then "No" else _, type text}}),
+				    // 5) Clave suplente estable dentro de cada actualización
+				    Ordenado = Table.Sort(ConFoco, {{"Orden", Order.Ascending}, {"Punto Turístico", Order.Ascending}}),
+				    ConClave = Table.AddIndexColumn(Ordenado, "PuntoKey", 1, 1, Int64.Type),
+				    Renombrado = Table.RenameColumns(ConClave, {{"PuntoTuristico", "Nombre INE"}}),
+				    Final = Table.SelectColumns(
+				        Renombrado,
+				        {"PuntoKey", "Punto Turístico", "Nombre INE", "Comunidad Autónoma", "Provincia", "Es Foco", "Latitud", "Longitud", "Orden"}
+				    )
+				in
+				    Final
+
+	annotation PBI_ResultType = Table

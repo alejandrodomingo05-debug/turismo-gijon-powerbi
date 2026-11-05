@@ -1,0 +1,163 @@
+table Fact_Oferta
+	lineageTag: e3aef963-bc74-5962-9a19-3fadcdf06f82
+
+	column Fecha
+		dataType: dateTime
+		formatString: dd/mm/yyyy
+		isHidden
+		lineageTag: 8c87a74f-04cd-5e57-89af-7f22ad282e0d
+		summarizeBy: none
+		sourceColumn: Fecha
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column PuntoKey
+		dataType: int64
+		formatString: 0
+		isHidden
+		lineageTag: 60eeaca8-65a6-5e5f-9ac5-c5083c6a0925
+		summarizeBy: none
+		sourceColumn: PuntoKey
+
+	column Establecimientos
+		dataType: int64
+		formatString: #,##0
+		isHidden
+		lineageTag: 3642379c-c41a-5b92-b8f1-2b7e4e734b4f
+		summarizeBy: none
+		sourceColumn: Establecimientos
+
+	column Habitaciones
+		dataType: int64
+		formatString: #,##0
+		isHidden
+		lineageTag: 2835e8d1-47ef-5af0-9e30-d49dd6c8d295
+		summarizeBy: none
+		sourceColumn: Habitaciones
+
+	column Plazas
+		dataType: int64
+		formatString: #,##0
+		isHidden
+		lineageTag: ab74f426-0b9d-5aa2-816f-89551eecf334
+		summarizeBy: none
+		sourceColumn: Plazas
+
+	column 'Personal Empleado'
+		dataType: int64
+		formatString: #,##0
+		isHidden
+		lineageTag: 490e2e4e-227a-5a7e-8936-f285787fdb29
+		summarizeBy: none
+		sourceColumn: Personal Empleado
+
+	column 'Plazas Dia'
+		dataType: int64
+		formatString: #,##0
+		isHidden
+		lineageTag: 72f879bd-0e9b-5f05-b88e-16564883ccf4
+		summarizeBy: sum
+		sourceColumn: Plazas Dia
+
+	column 'Habitaciones Dia'
+		dataType: int64
+		formatString: #,##0
+		isHidden
+		lineageTag: 43a89024-4026-5623-8c1c-374d37b549d4
+		summarizeBy: sum
+		sourceColumn: Habitaciones Dia
+
+	column 'Grado Ocup Plazas INE'
+		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
+		isHidden
+		lineageTag: 1d8cd74a-56e2-532a-b5c4-1de013681c9a
+		summarizeBy: none
+		sourceColumn: Grado Ocup Plazas INE
+
+	column 'Grado Ocup Plazas Finde INE'
+		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
+		isHidden
+		lineageTag: 02bdbf90-6be8-5dee-9685-1536c20e2ca7
+		summarizeBy: none
+		sourceColumn: Grado Ocup Plazas Finde INE
+
+	column 'Grado Ocup Habitaciones INE'
+		dataType: double
+		formatString: 0.0%;-0.0%;0.0%
+		isHidden
+		lineageTag: e05c13ab-2dad-5fee-bfe6-2faa61f8ecf2
+		summarizeBy: none
+		sourceColumn: Grado Ocup Habitaciones INE
+
+	partition Fact_Oferta = m
+		mode: import
+		source =
+				// =====================================================================
+				//  Fact_Oferta  ·  Hechos de oferta y ocupación hotelera (snapshot mensual)
+				//  Grano  : mes × punto turístico
+				//  Medidas: Establecimientos, Habitaciones, Plazas, Personal (semiaditivas:
+				//           se suman entre puntos, se promedian entre meses) y grados de
+				//           ocupación del INE (no aditivos: se ponderan en DAX).
+				// =====================================================================
+				let
+				    Origen = stg_INE_Oferta,
+				    DesdeInicio = Table.SelectRows(Origen, each [Fecha] >= pFechaInicio),
+				    CruceDim = Table.NestedJoin(
+				        DesdeInicio, {"PuntoTuristico"},
+				        Dim_PuntoTuristico, {"Nombre INE"},
+				        "Dim", JoinKind.Inner
+				    ),
+				    ConPuntoKey = Table.ExpandTableColumn(CruceDim, "Dim", {"PuntoKey"}),
+				    // Capacidad del mes (stock × días): peso para agregar ratios correctamente
+				    ConPlazasDia = Table.AddColumn(
+				        ConPuntoKey,
+				        "Plazas Dia",
+				        each if [Plazas] = null then null else [Plazas] * Date.DaysInMonth([Fecha]),
+				        Int64.Type
+				    ),
+				    ConHabitacionesDia = Table.AddColumn(
+				        ConPlazasDia,
+				        "Habitaciones Dia",
+				        each if [Habitaciones] = null then null else [Habitaciones] * Date.DaysInMonth([Fecha]),
+				        Int64.Type
+				    ),
+				    Final = Table.SelectColumns(
+				        ConHabitacionesDia,
+				        {
+				            "Fecha", "PuntoKey",
+				            "Establecimientos", "Habitaciones", "Plazas", "PersonalEmpleado",
+				            "Plazas Dia", "Habitaciones Dia",
+				            "GradoOcupPlazas", "GradoOcupPlazasFinSemana", "GradoOcupHabitaciones"
+				        }
+				    ),
+				    Renombrado = Table.RenameColumns(
+				        Final,
+				        {
+				            {"PersonalEmpleado", "Personal Empleado"},
+				            {"GradoOcupPlazas", "Grado Ocup Plazas INE"},
+				            {"GradoOcupPlazasFinSemana", "Grado Ocup Plazas Finde INE"},
+				            {"GradoOcupHabitaciones", "Grado Ocup Habitaciones INE"}
+				        }
+				    ),
+				    Tipado = Table.TransformColumnTypes(
+				        Renombrado,
+				        {
+				            {"Fecha", type date},
+				            {"PuntoKey", Int64.Type},
+				            {"Establecimientos", Int64.Type},
+				            {"Habitaciones", Int64.Type},
+				            {"Plazas", Int64.Type},
+				            {"Personal Empleado", Int64.Type},
+				            {"Plazas Dia", Int64.Type},
+				            {"Habitaciones Dia", Int64.Type},
+				            {"Grado Ocup Plazas INE", Percentage.Type},
+				            {"Grado Ocup Plazas Finde INE", Percentage.Type},
+				            {"Grado Ocup Habitaciones INE", Percentage.Type}
+				        }
+				    )
+				in
+				    Tipado
+
+	annotation PBI_ResultType = Table

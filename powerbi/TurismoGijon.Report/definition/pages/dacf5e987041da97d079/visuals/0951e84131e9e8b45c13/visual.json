@@ -1,0 +1,160 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "0951e84131e9e8b45c13",
+  "position": {
+    "x": 640,
+    "y": 404,
+    "z": 8000,
+    "height": 300,
+    "width": 616,
+    "tabOrder": 8000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Dim_PuntoTuristico"
+                    }
+                  },
+                  "Property": "Punto Turístico"
+                }
+              },
+              "queryRef": "Dim_PuntoTuristico.Punto Turístico",
+              "nativeQueryRef": "Punto Turístico"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Pernoctaciones"
+                }
+              },
+              "queryRef": "_Medidas.Pernoctaciones",
+              "nativeQueryRef": "Pernoctaciones"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Estancia Media"
+                }
+              },
+              "queryRef": "_Medidas.Estancia Media",
+              "nativeQueryRef": "Estancia Media"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Grado Ocupación Plazas"
+                }
+              },
+              "queryRef": "_Medidas.Grado Ocupación Plazas",
+              "nativeQueryRef": "Grado Ocupación Plazas"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "Pernoctaciones Var % AA"
+                }
+              },
+              "queryRef": "_Medidas.Pernoctaciones Var % AA",
+              "nativeQueryRef": "Pernoctaciones Var % AA"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Medidas"
+                    }
+                  },
+                  "Property": "% Pernoctaciones Internacionales"
+                }
+              },
+              "queryRef": "_Medidas.% Pernoctaciones Internacionales",
+              "nativeQueryRef": "% Pernoctaciones Internacionales"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "_Medidas"
+                  }
+                },
+                "Property": "Pernoctaciones"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Comparativa de destinos'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "altText": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Tabla comparativa de destinos con pernoctaciones, estancia media, ocupación, variación y peso internacional'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

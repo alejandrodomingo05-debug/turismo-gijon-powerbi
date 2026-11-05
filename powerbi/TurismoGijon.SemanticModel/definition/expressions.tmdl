@@ -1,0 +1,447 @@
+expression pINE_BaseUrl = "https://www.ine.es" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 71194a63-88d8-5a13-9691-061867f7cfc8
+
+expression pTablaDemanda = "2078" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 4edd8e5f-759b-5350-84a3-1aaa1318441f
+
+expression pTablaOferta = "2076" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 7298014b-6e79-5ddb-b21c-180240c101bb
+
+expression pPuntosTuristicos = "Gijón;Oviedo;Santander;Bilbao;Coruña;Sebastián" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: a1debc55-1590-578d-82a5-679e41466346
+
+expression pFechaInicio = #date(2015, 1, 1) meta [IsParameterQuery = true, Type = "Date", IsParameterQueryRequired = true]
+	lineageTag: 5637b518-2cd9-5c22-b879-f99130006f7c
+
+expression pGitHubRawBase = "https://raw.githubusercontent.com" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 9cd49933-4784-5c35-b5f5-f0f6017c340e
+
+expression pRutaReferencia = "GITHUB_USER/turismo-gijon-powerbi/main/data/reference/ref_puntos_turisticos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 4964f2b9-3e1f-5559-b33a-c143be286752
+
+expression fnLeerTablaINE =
+		// =====================================================================
+		//  fnLeerTablaINE
+		//  Descarga una tabla de INEbase en formato CSV (separador ';') y la
+		//  devuelve con las cabeceras promovidas.
+		//
+		//  Buenas prácticas aplicadas
+		//  · Web.Contents con URL base ESTÁTICA (parámetro) + RelativePath:
+		//    el servicio de Power BI puede validar el origen y programar la
+		//    actualización sin errores de "origen de datos dinámico".
+		//  · Encoding 65001 (UTF-8). Si las tildes salen corruptas, usar 1252.
+		//  · Timeout explícito: el CSV completo de la EOH pesa varios MB.
+		// =====================================================================
+		(idTabla as text) as table =>
+		let
+		    Binario = Web.Contents(
+		        pINE_BaseUrl,
+		        [
+		            RelativePath = "jaxiT3/files/t/csv_bdsc/" & idTabla & ".csv",
+		            Timeout = #duration(0, 0, 5, 0)
+		        ]
+		    ),
+		    Csv = Csv.Document(
+		        Binario,
+		        [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+		    ),
+		    ConCabeceras = Table.PromoteHeaders(Csv, [PromoteAllScalars = true])
+		in
+		    ConCabeceras
+	lineageTag: 994b89e8-140d-5f48-9320-0e96cc455347
+
+expression fnRenombrarPorPatron =
+		// =====================================================================
+		//  fnRenombrarPorPatron
+		//  Renombra columnas buscando un patrón (sin distinguir mayúsculas)
+		//  en lugar del nombre exacto. Hace el ETL resiliente a cambios menores
+		//  de redacción en las cabeceras del INE y falla con un error claro
+		//  si una columna esperada desaparece.
+		//
+		//  Uso: fnRenombrarPorPatron(tabla, {{"punto", "PuntoTuristico"}, {"periodo", "Periodo"}})
+		// =====================================================================
+		(tabla as table, mapeo as list) as table =>
+		let
+		    Columnas = Table.ColumnNames(tabla),
+		    Pares = List.Transform(
+		        mapeo,
+		        (par as list) =>
+		            let
+		                Coincidencias = List.Select(
+		                    Columnas,
+		                    each Text.Contains(_, par{0}, Comparer.OrdinalIgnoreCase)
+		                ),
+		                Encontrada =
+		                    if List.IsEmpty(Coincidencias) then
+		                        error Error.Record(
+		                            "EsquemaINE",
+		                            "No existe ninguna columna que contenga '" & par{0} & "'",
+		                            Columnas
+		                        )
+		                    else
+		                        Coincidencias{0}
+		            in
+		                {Encontrada, par{1}}
+		    ),
+		    Resultado = Table.RenameColumns(tabla, Pares)
+		in
+		    Resultado
+	lineageTag: 4759c772-a7b2-5674-88b6-e21a22309bac
+
+expression fnFechaDesdePeriodoINE =
+		// =====================================================================
+		//  fnFechaDesdePeriodoINE
+		//  Convierte el código de periodo mensual del INE ("2024M03") en la
+		//  fecha del primer día del mes (01/03/2024). Devuelve null para
+		//  periodos no mensuales (anuales, trimestrales...), lo que permite
+		//  usarla también como filtro.
+		// =====================================================================
+		(periodo as nullable text) as nullable date =>
+		    if periodo <> null
+		        and Text.Length(Text.Trim(periodo)) = 7
+		        and Text.At(Text.Trim(periodo), 4) = "M"
+		    then
+		        #date(
+		            Number.From(Text.Start(Text.Trim(periodo), 4)),
+		            Number.From(Text.End(Text.Trim(periodo), 2)),
+		            1
+		        )
+		    else
+		        null
+	lineageTag: 7853be55-8b7b-538f-af40-573e4195deed
+
+expression stg_INE_Demanda =
+		// =====================================================================
+		//  stg_INE_Demanda  ·  Staging (Habilitar carga: NO)
+		//  Origen : INE · EOH · Viajeros y pernoctaciones por puntos turísticos
+		//  Grano  : punto turístico × residencia × mes
+		//  Salida : PuntoTuristico | Residencia | Fecha | Viajeros | Pernoctaciones
+		// =====================================================================
+		let
+		    Origen = fnLeerTablaINE(pTablaDemanda),
+		    // 1) Nombres de columna estables (independientes de la redacción del INE)
+		    Renombrado = fnRenombrarPorPatron(
+		        Origen,
+		        {
+		            {"punto", "PuntoTuristico"},
+		            {"resid", "Residencia"},
+		            {"periodo", "Periodo"},
+		            {"total", "Valor"}
+		        }
+		    ),
+		    //    La columna restante es la de la medida ("Viajeros y pernoctaciones").
+		    //    Si el INE añade dimensiones nuevas, fallamos de forma explícita.
+		    Restantes = List.Difference(
+		        Table.ColumnNames(Renombrado),
+		        {"PuntoTuristico", "Residencia", "Periodo", "Valor"}
+		    ),
+		    ColMedida =
+		        if List.Count(Restantes) = 1 then
+		            Restantes{0}
+		        else
+		            error Error.Record(
+		                "EsquemaINE",
+		                "Se esperaba 1 columna de medida y hay " & Text.From(List.Count(Restantes)),
+		                Restantes
+		            ),
+		    ConMedida = Table.RenameColumns(Renombrado, {{ColMedida, "Medida"}}),
+		    // 2) Filtrar cuanto antes: sólo los puntos de interés y periodos mensuales
+		    //    (el CSV no admite plegado de consultas: filtrar pronto reduce memoria)
+		    Patrones = List.Transform(Text.Split(pPuntosTuristicos, ";"), Text.Trim),
+		    SoloPuntos = Table.SelectRows(
+		        ConMedida,
+		        each List.AnyTrue(
+		            List.Transform(
+		                Patrones,
+		                (p) => Text.Contains([PuntoTuristico], p, Comparer.OrdinalIgnoreCase)
+		            )
+		        )
+		    ),
+		    ConFecha = Table.AddColumn(
+		        SoloPuntos,
+		        "Fecha",
+		        each fnFechaDesdePeriodoINE([Periodo]),
+		        type nullable date
+		    ),
+		    SoloMensual = Table.SelectRows(ConFecha, each [Fecha] <> null),
+		    // 3) Valor: formato es-ES (1.234,5) y ".." / vacío = dato no disponible
+		    ValorLimpio = Table.TransformColumns(
+		        SoloMensual,
+		        {
+		            {
+		                "Valor",
+		                each if _ = null or List.Contains({"", ".", ".."}, Text.Trim(_)) then null else Text.Trim(_),
+		                type nullable text
+		            }
+		        }
+		    ),
+		    ValorNumerico = Table.TransformColumnTypes(ValorLimpio, {{"Valor", type number}}, "es-ES"),
+		    // 4) Normalizar etiquetas a un vocabulario controlado
+		    Normalizado = Table.TransformColumns(
+		        ValorNumerico,
+		        {
+		            {"PuntoTuristico", Text.Trim, type text},
+		            {
+		                "Medida",
+		                each
+		                    if Text.Contains(_, "viajer", Comparer.OrdinalIgnoreCase) then "Viajeros"
+		                    else if Text.Contains(_, "pernoct", Comparer.OrdinalIgnoreCase) then "Pernoctaciones"
+		                    else null,
+		                type nullable text
+		            },
+		            {
+		                "Residencia",
+		                each
+		                    if Text.Contains(_, "extranj", Comparer.OrdinalIgnoreCase) then "Extranjero"
+		                    else if Text.Contains(_, "espa", Comparer.OrdinalIgnoreCase) then "España"
+		                    else "Total",
+		                type text
+		            }
+		        }
+		    ),
+		    SoloMedidasConocidas = Table.SelectRows(Normalizado, each [Medida] <> null),
+		    // 5) Pivotar medidas a columnas: 1 fila = punto × residencia × mes
+		    SinPeriodo = Table.RemoveColumns(SoloMedidasConocidas, {"Periodo"}),
+		    Pivotado = Table.Pivot(
+		        SinPeriodo,
+		        {"Viajeros", "Pernoctaciones"},
+		        "Medida",
+		        "Valor",
+		        List.Sum
+		    ),
+		    // 6) Tipado final explícito
+		    Tipado = Table.TransformColumnTypes(
+		        Pivotado,
+		        {
+		            {"PuntoTuristico", type text},
+		            {"Residencia", type text},
+		            {"Fecha", type date},
+		            {"Viajeros", Int64.Type},
+		            {"Pernoctaciones", Int64.Type}
+		        }
+		    )
+		in
+		    Tipado
+	lineageTag: d9972a6a-a060-53ef-addd-9ac195ec19c4
+
+expression stg_INE_Oferta =
+		// =====================================================================
+		//  stg_INE_Oferta  ·  Staging (Habilitar carga: NO)
+		//  Origen : INE · EOH · Establecimientos, plazas estimadas, grados de
+		//           ocupación y personal empleado por puntos turísticos
+		//  Grano  : punto turístico × mes
+		//  Salida : PuntoTuristico | Fecha | Establecimientos | Habitaciones |
+		//           Plazas | PersonalEmpleado | GradoOcup* (en tanto por uno)
+		// =====================================================================
+		let
+		    Origen = fnLeerTablaINE(pTablaOferta),
+		    // 1) Nombres de columna estables
+		    Renombrado = fnRenombrarPorPatron(
+		        Origen,
+		        {
+		            {"punto", "PuntoTuristico"},
+		            {"periodo", "Periodo"},
+		            {"total", "Valor"}
+		        }
+		    ),
+		    Restantes = List.Difference(
+		        Table.ColumnNames(Renombrado),
+		        {"PuntoTuristico", "Periodo", "Valor"}
+		    ),
+		    ColMedida =
+		        if List.Count(Restantes) = 1 then
+		            Restantes{0}
+		        else
+		            error Error.Record(
+		                "EsquemaINE",
+		                "Se esperaba 1 columna de medida y hay " & Text.From(List.Count(Restantes)),
+		                Restantes
+		            ),
+		    ConMedida = Table.RenameColumns(Renombrado, {{ColMedida, "Medida"}}),
+		    // 2) Filtrar cuanto antes
+		    Patrones = List.Transform(Text.Split(pPuntosTuristicos, ";"), Text.Trim),
+		    SoloPuntos = Table.SelectRows(
+		        ConMedida,
+		        each List.AnyTrue(
+		            List.Transform(
+		                Patrones,
+		                (p) => Text.Contains([PuntoTuristico], p, Comparer.OrdinalIgnoreCase)
+		            )
+		        )
+		    ),
+		    ConFecha = Table.AddColumn(
+		        SoloPuntos,
+		        "Fecha",
+		        each fnFechaDesdePeriodoINE([Periodo]),
+		        type nullable date
+		    ),
+		    SoloMensual = Table.SelectRows(ConFecha, each [Fecha] <> null),
+		    // 3) Valor numérico (formato es-ES; ".." = no disponible)
+		    ValorLimpio = Table.TransformColumns(
+		        SoloMensual,
+		        {
+		            {
+		                "Valor",
+		                each if _ = null or List.Contains({"", ".", ".."}, Text.Trim(_)) then null else Text.Trim(_),
+		                type nullable text
+		            }
+		        }
+		    ),
+		    ValorNumerico = Table.TransformColumnTypes(ValorLimpio, {{"Valor", type number}}, "es-ES"),
+		    // 4) Vocabulario controlado de medidas (el orden de las reglas importa)
+		    ConMedidaStd = Table.AddColumn(
+		        ValorNumerico,
+		        "MedidaStd",
+		        each
+		            let
+		                m = Text.Lower([Medida])
+		            in
+		                if Text.Contains(m, "fin de semana") then "GradoOcupPlazasFinSemana"
+		                else if Text.Contains(m, "ponderad") then "GradoOcupPlazasPonderado"
+		                else if Text.Contains(m, "ocupaci") and Text.Contains(m, "habitaci") then "GradoOcupHabitaciones"
+		                else if Text.Contains(m, "ocupaci") and Text.Contains(m, "plaza") then "GradoOcupPlazas"
+		                else if Text.Contains(m, "establecimiento") then "Establecimientos"
+		                else if Text.Contains(m, "habitaci") then "Habitaciones"
+		                else if Text.Contains(m, "plaza") then "Plazas"
+		                else if Text.Contains(m, "personal") then "PersonalEmpleado"
+		                else null,
+		        type nullable text
+		    ),
+		    SoloMedidasConocidas = Table.SelectRows(ConMedidaStd, each [MedidaStd] <> null),
+		    // 5) Pivotar: 1 fila = punto × mes
+		    Columnas = Table.SelectColumns(SoloMedidasConocidas, {"PuntoTuristico", "Fecha", "MedidaStd", "Valor"}),
+		    Pivotado = Table.Pivot(
+		        Columnas,
+		        {
+		            "Establecimientos", "Habitaciones", "Plazas", "PersonalEmpleado",
+		            "GradoOcupPlazas", "GradoOcupPlazasFinSemana", "GradoOcupPlazasPonderado", "GradoOcupHabitaciones"
+		        },
+		        "MedidaStd",
+		        "Valor",
+		        List.Sum
+		    ),
+		    // 6) Ratios en tanto por uno (26,5 -> 0,265): se formatean como % en el modelo
+		    RatiosDecimales = Table.TransformColumns(
+		        Pivotado,
+		        {
+		            {"GradoOcupPlazas", each if _ = null then null else _ / 100, Percentage.Type},
+		            {"GradoOcupPlazasFinSemana", each if _ = null then null else _ / 100, Percentage.Type},
+		            {"GradoOcupPlazasPonderado", each if _ = null then null else _ / 100, Percentage.Type},
+		            {"GradoOcupHabitaciones", each if _ = null then null else _ / 100, Percentage.Type}
+		        }
+		    ),
+		    // 7) Tipado final explícito
+		    Tipado = Table.TransformColumnTypes(
+		        RatiosDecimales,
+		        {
+		            {"PuntoTuristico", type text},
+		            {"Fecha", type date},
+		            {"Establecimientos", Int64.Type},
+		            {"Habitaciones", Int64.Type},
+		            {"Plazas", Int64.Type},
+		            {"PersonalEmpleado", Int64.Type}
+		        }
+		    )
+		in
+		    Tipado
+	lineageTag: 9b32bb79-edbc-5587-99f8-1ec4760d6127
+
+expression stg_RefPuntos =
+		// =====================================================================
+		//  stg_RefPuntos  ·  Staging (Habilitar carga: NO)
+		//  Atributos de referencia de los destinos (CCAA, provincia, coordenadas,
+		//  orden, foco), versionados en data/reference/ref_puntos_turisticos.csv.
+		//
+		//  · Esta consulta es la ÚNICA que accede a GitHub. Dim_PuntoTuristico la
+		//    referencia en lugar de leer la web directamente: una consulta que
+		//    referencia otras consultas y además accede a un origen provoca el
+		//    error Formula.Firewall ("rebuild this data combination").
+		//  · Si el repositorio no está accesible (sin conexión, repo privado o aún
+		//    no publicado) se usa la copia incrustada: el informe siempre carga.
+		// =====================================================================
+		let
+		    // Table.Buffer fuerza la descarga DENTRO del try: sin él, M evalúa la
+		    // tabla de forma diferida y un error 404 escaparía al otherwise.
+		    Remota =
+		        try
+		            Table.Buffer(
+		                Table.PromoteHeaders(
+		                    Csv.Document(
+		                        Web.Contents(pGitHubRawBase, [RelativePath = pRutaReferencia]),
+		                        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+		                    ),
+		                    [PromoteAllScalars = true]
+		                )
+		            )
+		        otherwise
+		            null,
+		    Incrustada = #table(
+		        {"Patron", "NombreCorto", "ComunidadAutonoma", "Provincia", "EsFoco", "Latitud", "Longitud", "Orden"},
+		        {
+		            {"Gijón", "Gijón", "Principado de Asturias", "Asturias", "Sí", "43.5322", "-5.6611", "1"},
+		            {"Oviedo", "Oviedo", "Principado de Asturias", "Asturias", "No", "43.3614", "-5.8494", "2"},
+		            {"Santander", "Santander", "Cantabria", "Cantabria", "No", "43.4623", "-3.8100", "3"},
+		            {"Bilbao", "Bilbao", "País Vasco", "Bizkaia", "No", "43.2630", "-2.9350", "4"},
+		            {"Sebastián", "Donostia-San Sebastián", "País Vasco", "Gipuzkoa", "No", "43.3183", "-1.9812", "5"},
+		            {"Coruña", "A Coruña", "Galicia", "A Coruña", "No", "43.3623", "-8.4115", "6"}
+		        }
+		    ),
+		    Origen =
+		        if Remota <> null and Table.HasColumns(Remota, {"Patron", "NombreCorto", "Orden"}) then
+		            Remota
+		        else
+		            Incrustada,
+		    Tipado = Table.TransformColumnTypes(
+		        Origen,
+		        {
+		            {"Patron", type text},
+		            {"NombreCorto", type text},
+		            {"ComunidadAutonoma", type text},
+		            {"Provincia", type text},
+		            {"EsFoco", type text},
+		            {"Latitud", type number},
+		            {"Longitud", type number},
+		            {"Orden", Int64.Type}
+		        },
+		        "en-US"
+		    )
+		in
+		    Tipado
+	lineageTag: 8e51cd62-33ce-5853-b6ca-6cf21e535e47
+
+expression chk_Demanda_Totales =
+		// =====================================================================
+		//  chk_Demanda_Totales  ·  Control de calidad (Habilitar carga: NO)
+		//  Comprueba que la fila "Total" del INE = España + Extranjero para cada
+		//  punto y mes. Resultado esperado: tabla VACÍA. Cualquier fila indica
+		//  datos secretos/no disponibles o un cambio en el esquema del origen.
+		// =====================================================================
+		let
+		    Origen = stg_INE_Demanda,
+		    Totales = Table.SelectRows(Origen, each [Residencia] = "Total"),
+		    Desglose = Table.Group(
+		        Table.SelectRows(Origen, each [Residencia] <> "Total"),
+		        {"PuntoTuristico", "Fecha"},
+		        {
+		            {"ViajerosSuma", each List.Sum([Viajeros]), type nullable number},
+		            {"PernoctacionesSuma", each List.Sum([Pernoctaciones]), type nullable number}
+		        }
+		    ),
+		    Cruce = Table.NestedJoin(
+		        Totales, {"PuntoTuristico", "Fecha"},
+		        Desglose, {"PuntoTuristico", "Fecha"},
+		        "D", JoinKind.LeftOuter
+		    ),
+		    Expandido = Table.ExpandTableColumn(Cruce, "D", {"ViajerosSuma", "PernoctacionesSuma"}),
+		    ConDiferencias = Table.AddColumn(
+		        Expandido,
+		        "Diferencia",
+		        each Number.Abs(([Viajeros] ?? 0) - ([ViajerosSuma] ?? 0))
+		            + Number.Abs(([Pernoctaciones] ?? 0) - ([PernoctacionesSuma] ?? 0)),
+		        type number
+		    ),
+		    // Tolerancia de 1 unidad por redondeos de publicación
+		    Incidencias = Table.SelectRows(ConDiferencias, each [Diferencia] > 1)
+		in
+		    Incidencias
+	lineageTag: 8481ecf0-107d-5bb2-9840-5cf021a8a28a

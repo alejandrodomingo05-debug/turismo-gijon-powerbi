@@ -1,0 +1,20 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.0.0/schema.json",
+  "name": "e0c25f38114b8eef0aba",
+  "displayName": "Resumen",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "42c25936d4da081c255b",
+      "target": "263df86e47db5cd012dd",
+      "type": "NoFilter"
+    },
+    {
+      "source": "9ce34fda064c18386929",
+      "target": "de23d706569379e8d631",
+      "type": "NoFilter"
+    }
+  ]
+}
