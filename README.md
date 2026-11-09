@@ -151,7 +151,7 @@ Todas las medidas (más de 30, comentadas y organizadas en carpetas) están en [
 El informe completo (modelo, 39 medidas y 3 páginas) está incluido y listo para abrir.
 
 ```bash
-git clone https://github.com/GITHUB_USER/turismo-gijon-powerbi.git
+git clone https://github.com/alejandrodomingo05-debug/turismo-gijon-powerbi.git
 ```
 
 1. Doble clic en `powerbi/TurismoGijon.pbip` (Power BI Desktop).
@@ -172,7 +172,7 @@ Sigue la [guía de desarrollo](docs/GUIA_DESARROLLO.md) paso a paso: cada consul
 
 ### Opción C · Sólo el informe
 
-Descarga el `.pbix` de la última [Release](https://github.com/GITHUB_USER/turismo-gijon-powerbi/releases).
+Descarga el `.pbix` de la última [Release](https://github.com/alejandrodomingo05-debug/turismo-gijon-powerbi/releases).
 
 ### Datos sin conexión
 
@@ -219,6 +219,6 @@ Código y documentación bajo licencia [MIT](LICENSE). Los datos pertenecen a su
 
 ## 👤 Autor
 
-**GITHUB_USER** · [GitHub](https://github.com/GITHUB_USER) · [LinkedIn](https://www.linkedin.com/in/tu-perfil) <!-- Sustituye por tu perfil -->
+**alejandrodomingo05-debug** · [GitHub](https://github.com/alejandrodomingo05-debug) · [LinkedIn](https://www.linkedin.com/in/tu-perfil) <!-- Sustituye por tu perfil -->
 
 *Proyecto de portfolio de Business Intelligence alineado con la certificación Microsoft PL-300 (Power BI Data Analyst).*

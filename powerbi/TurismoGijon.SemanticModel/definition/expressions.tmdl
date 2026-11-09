@@ -16,7 +16,7 @@ expression pFechaInicio = #date(2015, 1, 1) meta [IsParameterQuery = true, Type 
 expression pGitHubRawBase = "https://raw.githubusercontent.com" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
 	lineageTag: 9cd49933-4784-5c35-b5f5-f0f6017c340e
 
-expression pRutaReferencia = "GITHUB_USER/turismo-gijon-powerbi/main/data/reference/ref_puntos_turisticos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+expression pRutaReferencia = "alejandrodomingo05-debug/turismo-gijon-powerbi/main/data/reference/ref_puntos_turisticos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
 	lineageTag: 4964f2b9-3e1f-5559-b33a-c143be286752
 
 expression fnLeerTablaINE =

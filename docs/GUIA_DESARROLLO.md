@@ -142,7 +142,7 @@ Crea cada parámetro en *Inicio > Administrar parámetros > Nuevo parámetro*, o
 
 ```powerquery
 // Parámetro · Ruta relativa del CSV de referencia versionado en este repositorio
-"GITHUB_USER/turismo-gijon-powerbi/main/data/reference/ref_puntos_turisticos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+"alejandrodomingo05-debug/turismo-gijon-powerbi/main/data/reference/ref_puntos_turisticos.csv" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
 ```
 
 ### 1.4 Funciones reutilizables

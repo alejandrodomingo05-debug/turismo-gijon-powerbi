@@ -49,4 +49,4 @@ powerbi/
 | Carpetas `definition/` (TMDL y PBIR) y `StaticResources/` | `.pbi/cache.abf` (caché de datos) |
 | `.pbi/editorSettings.json` | `*.pbix` (se publica en GitHub Releases) |
 
-> El `.pbix` compilado se adjunta a cada [Release](https://github.com/GITHUB_USER/turismo-gijon-powerbi/releases) para quien sólo quiera abrir el informe.
+> El `.pbix` compilado se adjunta a cada [Release](https://github.com/alejandrodomingo05-debug/turismo-gijon-powerbi/releases) para quien sólo quiera abrir el informe.

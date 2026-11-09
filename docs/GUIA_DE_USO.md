@@ -38,7 +38,7 @@ Esta guía explica cómo **descargar, abrir, actualizar y usar** el informe, y q
 **Opción B · Con Git**
 
 ```bash
-git clone https://github.com/GITHUB_USER/turismo-gijon-powerbi.git C:\Proyectos\turismo-gijon-powerbi
+git clone https://github.com/alejandrodomingo05-debug/turismo-gijon-powerbi.git C:\Proyectos\turismo-gijon-powerbi
 ```
 
 ## 3. Abrirlo por primera vez
