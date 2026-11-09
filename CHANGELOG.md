@@ -8,6 +8,12 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 - Capturas reales e insights con los datos actualizados.
 - Publicación en el servicio de Power BI con actualización programada.
 
+## [0.3.0] · 2026-11-09
+
+### Añadido
+- Guía de uso (`docs/GUIA_DE_USO.md`): requisitos, descarga, primera apertura, recorrido por las tres páginas, tareas habituales, solución de problemas y glosario.
+- Acceso directo a la guía de uso desde el README.
+
 ## [0.2.0] · 2026-11-05
 
 ### Añadido

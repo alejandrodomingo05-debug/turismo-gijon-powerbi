@@ -12,11 +12,13 @@
 ![Datos](https://img.shields.io/badge/datos-INE%20%C2%B7%20EOH-A87A00)
 ![Licencia](https://img.shields.io/badge/licencia-MIT-276C44)
 
-[Contexto](#-contexto-de-negocio) · [Arquitectura](#-arquitectura) · [Capturas](#-capturas) · [Insights](#-principales-insights) · [Uso](#-cómo-usar-el-proyecto) · [Guía técnica](docs/GUIA_DESARROLLO.md)
+[Contexto](#-contexto-de-negocio) · [Arquitectura](#-arquitectura) · [Capturas](#-capturas) · [Insights](#-principales-insights) · [Uso](#-cómo-usar-el-proyecto) · [📘 Guía de uso](docs/GUIA_DE_USO.md) · [🛠️ Guía técnica](docs/GUIA_DESARROLLO.md)
 
 </div>
 
 ---
+
+> **¿Sólo quieres verlo funcionando?** Descarga el repositorio (*Code > Download ZIP*), extráelo, abre `powerbi/TurismoGijon.pbip` con Power BI Desktop y pulsa **Actualizar**. Paso a paso, con un recorrido por cada página y solución de problemas, en la **[guía de uso](docs/GUIA_DE_USO.md)**.
 
 ## 📌 Contexto de negocio
 
@@ -162,6 +164,8 @@ git clone https://github.com/GITHUB_USER/turismo-gijon-powerbi.git
 | `pFechaInicio` | `01/01/2015` | Inicio del histórico |
 | `pTablaDemanda` / `pTablaOferta` | `2078` / `2076` | Tablas del INE |
 
+Cómo leer cada página, tareas habituales (actualizar cada mes, añadir ciudades, publicar, exportar) y solución de problemas: **[guía de uso](docs/GUIA_DE_USO.md)**.
+
 ### Opción B · Construirlo desde cero
 
 Sigue la [guía de desarrollo](docs/GUIA_DESARROLLO.md) paso a paso: cada consulta de Power Query está en [`src/power-query/`](src/power-query/), las medidas en [`src/dax/`](src/dax/) y el tema en [`src/theme/`](src/theme/).
@@ -182,7 +186,7 @@ Descarga las tablas del INE en `data/raw/`, genera extractos filtrados en `data/
 
 ```text
 ├── data/                 # raw (ignorado) · processed · reference
-├── docs/                 # guía técnica, diccionario, diseño y capturas
+├── docs/                 # guía de uso, guía técnica, diccionario, diseño y capturas
 ├── powerbi/              # Power BI Project (.pbip · TMDL · PBIR)
 ├── scripts/              # utilidades de descarga y validación
 └── src/

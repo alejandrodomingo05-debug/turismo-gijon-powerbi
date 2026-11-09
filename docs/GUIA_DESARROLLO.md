@@ -1633,6 +1633,7 @@ turismo-gijon-powerbi/
 │   └── reference/
 │       └── ref_puntos_turisticos.csv
 ├── docs/
+│   ├── GUIA_DE_USO.md            # Guía para usuarios: abrir, actualizar, leer el informe
 │   ├── GUIA_DESARROLLO.md        # Esta guía
 │   ├── diccionario_datos.md
 │   ├── design/
